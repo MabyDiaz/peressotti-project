@@ -1,0 +1,62 @@
+[
+  {
+    "nombre": "Tarjetas personales",
+    "descripcion": "100 tarjetas de presentación a todo color.",
+    "imagen": "/TarjetasPersonales.jpg",
+    "oferta": true,
+    "descuento": 20,
+    "precio": 15000,
+    "esPersonalizable": true,
+    "activo": true,
+    "idCategoria": 1,
+    "idAdministrador": 1
+  },
+  {
+    "nombre": "Stickers/calcos",
+    "descripcion": "100 calcos circulares 5cm aprox. en papel autoadhesivo",
+    "imagen": "/Stickers.jpg",
+    "oferta": true,
+    "descuento": 20,
+    "precio": 9000,
+    "esPersonalizable": true,
+    "activo": true,
+    "idCategoria": 1,
+    "idAdministrador": 1
+  },
+  {
+    "nombre": "Bolsitas golosineras",
+    "descripcion": "10 bolsitas 10cm x 17cm x 4cm personalizadas.",
+    "imagen": "/BolsitasGolosineras.jpg",
+    "oferta": true,
+    "descuento": 20,
+    "precio": 7500,
+    "esPersonalizable": true,
+    "activo": true,
+    "idCategoria": 3,
+    "idAdministrador": 1
+  },
+  {
+    "nombre": "Cuadernos personalizados",
+    "descripcion": "Cuaderno A5 tapa dura, diseño exclusivo, ideal para regalar.",
+    "imagen": "/CuadernoPersonalizado.jpg",
+    "oferta": true,
+    "descuento": 20,
+    "precio": 12500,
+    "esPersonalizable": true,
+    "activo": true,
+    "idCategoria": 4,
+    "idAdministrador": 1
+  },
+  {
+    "nombre": "Abecedario Imantado",
+    "descripcion": "Para que los más peques de la casa aprendan el abecedario de una forma divertida!!.",
+    "imagen": "/imanesalfabeto.jpg",
+    "oferta": false,
+    "descuento": 0,
+    "precio": 10000,
+    "esPersonalizable": false,
+    "activo": true,
+    "idCategoria": 2,
+    "idAdministrador": 1
+  }
+]
