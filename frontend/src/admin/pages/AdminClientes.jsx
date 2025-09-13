@@ -3,6 +3,7 @@ import api from '../../api/axios';
 import { useRef } from 'react';
 import { toast } from 'react-toastify';
 import { FaUser, FaPhone, FaEnvelope, FaLock } from 'react-icons/fa';
+import Pagination from '../components/Pagination.jsx';
 
 export default function AdminClientes() {
   const [clientes, setClientes] = useState([]);
@@ -23,30 +24,49 @@ export default function AdminClientes() {
     contrasena: '',
   });
 
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10,
+  });
+
   const nombreInputRef = useRef(null);
 
   // Fetch clientes desde la API
-  const fetchClientes = useCallback(async () => {
-    try {
-      const response = await api.get('/clientes', {
-        params: {
-          search,
-          activo:
-            estado === 'todos' ? 'all' : estado === 'activos' ? true : false,
-        },
-      });
-      setClientes(response.data.data);
-    } catch (error) {
-      console.error('Error al cargar clientes:', error);
-      if (error.response?.status === 401) {
-        return;
+  const fetchClientes = useCallback(
+    async (page = 1) => {
+      try {
+        const response = await api.get('/clientes', {
+          params: {
+            page,
+            search,
+            activo:
+              estado === 'todos' ? 'all' : estado === 'activo' ? true : false,
+          },
+        });
+        setClientes(response.data.data);
+        setPagination(
+          response.data.pagination || {
+            currentPage: 1,
+            totalPages: 1,
+            totalItems: 0,
+            itemsPerPage: 10,
+          }
+        );
+      } catch (error) {
+        console.error('Error al cargar clientes:', error);
+        if (error.response?.status === 401) {
+          return;
+        }
       }
-    }
-  }, [search, estado]);
+    },
+    [search, estado]
+  );
 
   useEffect(() => {
-    fetchClientes();
-  }, [fetchClientes]);
+    fetchClientes(pagination.currentPage);
+  }, [fetchClientes, pagination.currentPage]);
 
   const openForm = (mode, cliente = null) => {
     setFormMode(mode);
@@ -147,8 +167,8 @@ export default function AdminClientes() {
             onChange={(e) => setEstado(e.target.value)}
             className='border border-gray-300 rounded text-sm px-3 py-1 focus:outline-none focus:ring focus:border-blue-300'>
             <option value='todos'>Todos los estados</option>
-            <option value='activos'>Activo</option>
-            <option value='inactivos'>Inactivo</option>
+            <option value='activo'>Activo</option>
+            <option value='inactivo'>Inactivo</option>
           </select>
           <button
             onClick={() => openForm('crear')}
@@ -228,18 +248,10 @@ export default function AdminClientes() {
         </table>
       </div>
 
-      {/* Paginación */}
-      <div className='flex justify-end items-center space-x-2 text-gray-500 text-sm'>
-        <button className='flex items-center gap-1 px-3 py-1 text-xs rounded hover:bg-[#e8e9ea] hover:text-gray-800 transition'>
-          <span>«</span>
-          <span>Anterior</span>
-        </button>
-        <span className='px-2 py-1 text-xs'>Página 1 de 5</span>
-        <button className='flex items-center gap-1 px-3 py-1 text-xs rounded hover:bg-[#e8e9ea] hover:text-gray-800 transition'>
-          <span>Siguiente</span>
-          <span>»</span>
-        </button>
-      </div>
+      <Pagination
+        pagination={pagination}
+        onPageChange={(page) => fetchClientes(page)}
+      />
 
       {/* Modal Form */}
       {showForm && (

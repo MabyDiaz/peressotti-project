@@ -1,287 +1,7 @@
-// import { useEffect, useState } from 'react';
-// import axios from '../../api/axios';
-
-// export default function AdminCategorias() {
-//   const [categorias, setCategorias] = useState([]);
-//   const [search, setSearch] = useState('');
-//   const [estado, setEstado] = useState('todos');
-
-//   const [showForm, setShowForm] = useState(false);
-//   const [formMode, setFormMode] = useState('crear'); // 'crear' o 'editar'
-//   const [selectedCategoria, setSelectedCategoria] = useState(null);
-
-//   const [showConfirm, setShowConfirm] = useState(false);
-
-//   useEffect(() => {
-//     const fetchCategorias = async () => {
-//       const response = await axios.get('/categorias', {
-//         params: {
-//           search,
-//           activo:
-//             estado === 'todos' ? 'all' : estado === 'activos' ? true : false,
-//         },
-//       });
-//       setCategorias(response.data.data);
-//     };
-
-//     fetchCategorias();
-//   }, [search, estado]);
-
-//   const openForm = (mode, categoria = null) => {
-//     setFormMode(mode);
-//     setSelectedCategoria(categoria);
-//     setShowForm(true);
-//   };
-
-//   const closeForm = () => {
-//     setShowForm(false);
-//     setSelectedCategoria(null);
-//   };
-
-//   const openConfirm = (categoria) => {
-//     setSelectedCategoria(categoria);
-//     setShowConfirm(true);
-//   };
-
-//   const closeConfirm = () => {
-//     setSelectedCategoria(null);
-//     setShowConfirm(false);
-//   };
-
-//   return (
-//     <div className='space-y-6'>
-//       {/* Header con título y subtítulo */}
-//       <div className='flex items-center justify-between'>
-//         <div>
-//           <h2 className='text-2xl font-bold'>Gestión de Categorías</h2>
-//           <p className='text-gray-500 text-sm'>
-//             Administra las categorías de productos
-//           </p>
-//         </div>
-
-//         {/* Toolbar */}
-//         <div className='flex gap-2 items-center'>
-//           <input
-//             type='text'
-//             placeholder='Buscar...'
-//             value={search}
-//             onChange={(e) => setSearch(e.target.value)}
-//             className='border border-gray-300 rounded text-sm px-3 py-1 focus:outline-none focus:ring focus:border-blue-300'
-//           />
-//           <select
-//             value={estado}
-//             onChange={(e) => setEstado(e.target.value)}
-//             className='border border-gray-300 rounded text-sm px-3 py-1 focus:outline-none focus:ring focus:border-blue-300'>
-//             <option value='todos'>Todos los estados</option>
-//             <option value='activos'>Activo</option>
-//             <option value='inactivos'>Inactivo</option>
-//           </select>
-//           <button
-//             onClick={() => openForm('crear')}
-//             className='bg-red-600 text-white text-sm px-4 py-1 rounded hover:bg-red-700'>
-//             Nueva Categoría
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* Tabla de categorías */}
-//       <div className='overflow-x-auto bg-white rounded shadow'>
-//         <table className='min-w-full divide-y divide-gray-200'>
-//           <thead className='bg-gray-50'>
-//             <tr>
-//               <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
-//                 id
-//               </th>
-//               <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
-//                 Nombre
-//               </th>
-//               <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
-//                 Imagen
-//               </th>
-//               <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
-//                 Estado
-//               </th>
-//               <th className='bg-[#e8e9ea] px-4 py-2 text-center text-xs font-medium text-gray-700 uppercase'>
-//                 Acciones
-//               </th>
-//             </tr>
-//           </thead>
-//           <tbody className='divide-y divide-gray-200 text-xs'>
-//             {categorias.map((cat) => (
-//               <tr key={cat.id}>
-//                 <td className='px-4 py-2'>{cat.id}</td>
-//                 <td className='px-4 py-2'>{cat.nombre}</td>
-//                 <td className='px-4 py-2'>
-//                   {cat.imagenURL && (
-//                     <img
-//                       src={cat.imagenURL}
-//                       alt={cat.nombre}
-//                       className='w-12 h-12 object-cover rounded'
-//                     />
-//                   )}
-//                 </td>
-//                 <td className='px-4 py-2'>
-//                   {cat.activo ? 'Activo' : 'Inactivo'}
-//                 </td>
-//                 <td className='px-4 py-2 text-center '>
-//                   <button
-//                     onClick={() => openForm('ver', cat)}
-//                     className='px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-xs mr-1'>
-//                     👁
-//                   </button>
-//                   <button
-//                     onClick={() => openForm('editar', cat)}
-//                     className='px-2 py-1 bg-blue-200 rounded hover:bg-blue-300 text-xs mr-1'>
-//                     ✏
-//                   </button>
-//                   <button
-//                     onClick={() => openConfirm(cat)}
-//                     className='px-2 py-1 bg-red-200 rounded hover:bg-red-300 text-xs'>
-//                     🗑
-//                   </button>
-//                 </td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </div>
-
-//       {/* Paginación */}
-//       <div className='flex justify-end items-center space-x-2 text-gray-500 text-sm'>
-//         <button className='flex items-center gap-1 px-3 py-1 text-xs rounded hover:bg-[#e8e9ea] hover:text-gray-800 transition'>
-//           <span>«</span>
-//           <span>Anterior</span>
-//         </button>
-//         <span className='px-2 py-1 text-xs'>Página 1 de 5</span>
-//         <button className='flex items-center gap-1 px-3 py-1 text-xs rounded hover:bg-[#e8e9ea] hover:text-gray-800 transition'>
-//           <span>Siguiente</span>
-//           <span>»</span>
-//         </button>
-//       </div>
-
-//       {/* Modal Form */}
-//       {showForm && (
-//         <div className='fixed inset-0 flex items-center justify-center bg-black/70 z-50'>
-//           <div className='bg-white p-6 rounded shadow w-96'>
-//             <h3 className='bg-red-600 text-white text-sm font-bold mb-4 text-center p-2 rounded uppercase'>
-//               {formMode === 'crear'
-//                 ? 'Registrar Categoría'
-//                 : formMode === 'editar'
-//                 ? 'Editar Categoría'
-//                 : 'Ver Categoría'}
-//             </h3>
-
-//             <form
-//               onSubmit={(e) => {
-//                 e.preventDefault();
-//                 if (formMode === 'crear') crearCategoria();
-//                 if (formMode === 'editar') setShowConfirm(true);
-//               }}
-//               className='flex flex-col gap-4'>
-//               {/* Nombre */}
-//               <div className='row flex items-center border rounded px-3 py-2 gap-2'>
-//                 <input
-//                   type='text'
-//                   placeholder='Nombre'
-//                   value={selectedCategoria?.nombre || ''}
-//                   onChange={(e) =>
-//                     setSelectedCategoria({
-//                       ...selectedCategoria,
-//                       nombre: e.target.value,
-//                     })
-//                   }
-//                   disabled={formMode === 'ver'}
-//                   required
-//                   className='flex-1 outline-none'
-//                 />
-//               </div>
-
-//               {/* URL Imagen */}
-//               <div className='row flex items-center border rounded px-3 py-2 gap-2'>
-//                 <input
-//                   type='text'
-//                   placeholder='URL Imagen'
-//                   value={selectedCategoria?.imagenURL || ''}
-//                   onChange={(e) =>
-//                     setSelectedCategoria({
-//                       ...selectedCategoria,
-//                       imagenURL: e.target.value,
-//                     })
-//                   }
-//                   disabled={formMode === 'ver'}
-//                   className='flex-1 outline-none'
-//                 />
-//               </div>
-
-//               {/* Botones */}
-//               <div
-//                 className={`flex mt-2 ${
-//                   formMode === 'ver' ? 'justify-center' : 'justify-between'
-//                 }`}>
-//                 {formMode !== 'ver' && (
-//                   <button
-//                     type='submit'
-//                     className='bg-red-600 hover:bg-red-700 text-white text-xs uppercase font-bold p-2 rounded transition-colors duration-200 w-1/2 mr-2'>
-//                     Guardar
-//                   </button>
-//                 )}
-//                 <button
-//                   type='button'
-//                   onClick={closeForm}
-//                   className={`bg-gray-600 text-xs hover:bg-gray-700 text-white font-bold uppercase p-2 rounded transition-colors duration-200 ${
-//                     formMode === 'ver' ? 'w-auto px-4' : 'w-1/2 ml-2'
-//                   }`}>
-//                   Cerrar
-//                 </button>
-//               </div>
-//             </form>
-//           </div>
-//         </div>
-//       )}
-
-//       {/* Modal Confirmación */}
-//       {showConfirm && (
-//         <div className='fixed inset-0 flex items-center justify-center bg-black/70 z-50'>
-//           <div className='bg-white p-6 rounded shadow w-80 text-center'>
-//             <h3 className='text-lg font-bold mb-4'>Eliminar Categoría</h3>
-//             <p className='mb-4'>
-//               ¿Estás seguro de eliminar la categoría "
-//               {selectedCategoria?.nombre}"?
-//             </p>
-//             <div className='flex justify-around mt-4'>
-//               <button
-//                 className='bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors'
-//                 onClick={async () => {
-//                   try {
-//                     await axios.delete(`/categorias/${selectedCategoria.id}`);
-//                     toast.success('Categoría eliminada exitosamente');
-//                     fetchCategorias();
-//                     setShowConfirm(false);
-//                     setSelectedCategoria(null);
-//                   } catch (error) {
-//                     toast.error(
-//                       error.response?.data?.message || 'Error al eliminar'
-//                     );
-//                   }
-//                 }}>
-//                 Eliminar
-//               </button>
-//               <button
-//                 className='bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors'
-//                 onClick={closeConfirm}>
-//                 Cancelar
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
 import { useEffect, useState, useCallback } from 'react';
 import axios from '../../api/axios';
 import { toast } from 'react-toastify';
+import Pagination from '../components/Pagination.jsx';
 
 export default function AdminCategorias() {
   const [categorias, setCategorias] = useState([]);
@@ -301,25 +21,44 @@ export default function AdminCategorias() {
     preview: '', // URL para preview
   });
 
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10,
+  });
+
   // Fetch categorías
-  const fetchCategorias = useCallback(async () => {
-    try {
-      const res = await axios.get('/categorias', {
-        params: {
-          search,
-          activo:
-            estado === 'todos' ? 'all' : estado === 'activos' ? true : false,
-        },
-      });
-      setCategorias(res.data.data);
-    } catch (err) {
-      console.error(err);
-    }
-  }, [search, estado]);
+  const fetchCategorias = useCallback(
+    async (page = 1) => {
+      try {
+        const res = await axios.get('/categorias', {
+          params: {
+            page,
+            search,
+            activo:
+              estado === 'todos' ? 'all' : estado === 'activo' ? true : false,
+          },
+        });
+        setCategorias(res.data.data);
+        setPagination(
+          res.data.pagination || {
+            currentPage: 1,
+            totalPages: 1,
+            totalItems: 0,
+            itemsPerPage: 10,
+          }
+        );
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [search, estado]
+  );
 
   useEffect(() => {
-    fetchCategorias();
-  }, [fetchCategorias]);
+    fetchCategorias(pagination.currentPage);
+  }, [fetchCategorias, pagination.currentPage]);
 
   const openForm = (mode, categoria = null) => {
     setFormMode(mode);
@@ -350,7 +89,7 @@ export default function AdminCategorias() {
       const payload = new FormData();
       payload.append('nombre', formData.nombre);
       if (formData.imagenFile) {
-        payload.append('imagenURL', formData.imagenFile); 
+        payload.append('imagenURL', formData.imagenFile);
       }
 
       let res;
@@ -415,8 +154,8 @@ export default function AdminCategorias() {
             onChange={(e) => setEstado(e.target.value)}
             className='border border-gray-300 rounded text-sm px-3 py-1 focus:outline-none focus:ring focus:border-blue-300'>
             <option value='todos'>Todos los estados</option>
-            <option value='activos'>Activo</option>
-            <option value='inactivos'>Inactivo</option>
+            <option value='activo'>Activo</option>
+            <option value='inactivo'>Inactivo</option>
           </select>
           <button
             onClick={() => openForm('crear')}
@@ -488,6 +227,11 @@ export default function AdminCategorias() {
         </table>
       </div>
 
+      <Pagination
+        pagination={pagination}
+        onPageChange={(page) => fetchCategorias(page)}
+      />
+
       {/* Modal Form */}
       {showForm && (
         <div className='fixed inset-0 flex items-center justify-center bg-black/70 z-50'>
@@ -507,7 +251,7 @@ export default function AdminCategorias() {
                 <div className='flex flex-col'>
                   <input
                     type='text'
-                     name='imagen'
+                    name='imagen'
                     placeholder='Nombre'
                     value={formData.nombre}
                     onChange={(e) =>

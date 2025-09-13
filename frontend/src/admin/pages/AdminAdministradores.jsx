@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import api from '../../api/axios';
 import { toast } from 'react-toastify';
 import { FaUser, FaPhone, FaEnvelope, FaLock } from 'react-icons/fa';
+import Pagination from '../components/Pagination.jsx';
 
 export default function AdminAdministradores() {
   const [admins, setAdmins] = useState([]);
@@ -23,26 +24,54 @@ export default function AdminAdministradores() {
     contrasena: '',
   });
 
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10,
+  });
+
   // Fetch administradores desde la API
-  const fetchAdmins = useCallback(async () => {
-    try {
-      const response = await api.get('/administradores', {
-        params: {
-          search,
-          activo:
-            estado === 'todos' ? 'all' : estado === 'activo' ? true : false,
-        },
-      });
-      setAdmins(response.data.data);
-    } catch (error) {
-      console.error('Error al cargar administradores:', error);
-      if (error.response?.status === 401) return;
-    }
-  }, [search, estado]);
+  const fetchAdmins = useCallback(
+    async (page = 1) => {
+      try {
+        const response = await api.get('/administradores', {
+          params: {
+            page,
+            limit: 10,
+            search,
+            activo:
+              estado === 'todos' ? 'all' : estado === 'activo' ? true : false,
+          },
+        });
+
+        // Solo si response existe
+        if (response && response.data) {
+          console.log('API Response:', response.data); // Para debug sin romper
+          setAdmins(response.data.data || []);
+          setPagination(
+            response.data.pagination || {
+              currentPage: 1,
+              totalPages: 1,
+              totalItems: 0,
+              itemsPerPage: 10,
+            }
+          );
+        }
+      } catch (error) {
+        console.error(
+          'Error al cargar administradores:',
+          error?.response || error
+        );
+        toast.error('No se pudieron cargar los administradores');
+      }
+    },
+    [search, estado]
+  );
 
   useEffect(() => {
-    fetchAdmins();
-  }, [fetchAdmins]);
+    fetchAdmins(pagination.currentPage);
+  }, [fetchAdmins, pagination.currentPage]);
 
   const openForm = (mode, admin = null) => {
     setFormMode(mode);
@@ -138,8 +167,8 @@ export default function AdminAdministradores() {
             onChange={(e) => setEstado(e.target.value)}
             className='border border-gray-300 rounded text-sm px-3 py-1 focus:outline-none focus:ring focus:border-blue-300'>
             <option value='todos'>Todos los estados</option>
-            <option value='activos'>Activo</option>
-            <option value='inactivos'>Inactivo</option>
+            <option value='activo'>Activo</option>
+            <option value='inactivo'>Inactivo</option>
           </select>
           <button
             onClick={() => openForm('crear')}
@@ -218,6 +247,11 @@ export default function AdminAdministradores() {
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        pagination={pagination}
+        onPageChange={(page) => fetchAdmins(page)}
+      />
 
       {/* Modal Form */}
       {showForm && (

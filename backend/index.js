@@ -18,7 +18,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware de seguridad
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        'img-src': ["'self'", 'data:', 'http://localhost:3000'],
+      },
+    },
+  })
+);
 
 // Configuración de CORS
 const allowedOrigins = [
@@ -53,6 +62,11 @@ app.options(
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+app.use((req, res, next) => {
+  res.removeHeader("Cross-Origin-Resource-Policy");
+  next();
+});
 // Middleware para servir imágenes
 app.use(
   '/uploads',

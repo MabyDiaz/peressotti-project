@@ -172,7 +172,7 @@ export default function AdminLayout() {
         <div className='p-4 border-t border-gray-700'>
           <button
             onClick={logout}
-            className='w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded'>
+            className='w-full bg-red-600 hover:bg-red-700 text-white tex-sm py-2 px-4 rounded'>
             Cerrar sesión
           </button>
         </div>
