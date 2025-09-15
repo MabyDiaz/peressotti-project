@@ -265,8 +265,7 @@ export const updateProducto = async (req, res) => {
 
     const imagen = req.file
       ? `/uploads/${req.file.filename}`
-      : imagenBody || producto.imagen; // 👈 mantenemos la existente si no se envía
-
+      : imagenBody || producto.imagen; 
     await producto.update({
       nombre,
       descripcion,

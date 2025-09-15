@@ -26,7 +26,7 @@ router.use('/metodospagos', metodoPagoRoutes);
 router.use('/carritos', carritoRoutes);
 router.use('/detallecarritos', detalleCarritoRoutes);
 router.use('/detallepedidos', detallePedidoRoutes);
-router.use('/cuponesdescuentos', cuponDescuentoRoutes);
+router.use('/cupones', cuponDescuentoRoutes);
 router.use('/dashboard', dashboardRoutes);
 
 export default router;

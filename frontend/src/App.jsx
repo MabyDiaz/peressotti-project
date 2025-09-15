@@ -23,6 +23,7 @@ import AdminPedidos from './admin/pages/AdminPedidos';
 import AdminCategorias from './admin/pages/AdminCategorias';
 import AdminCupones from './admin/pages/AdminCupones';
 import AdminAdministradores from './admin/pages/AdminAdministradores.jsx';
+import AdminRoles from './admin/pages/AdminRoles.jsx';
 
 import './App.css';
 
@@ -112,6 +113,10 @@ function App() {
               <Route
                 path='administradores'
                 element={<AdminAdministradores />}
+              />
+              <Route
+                path='roles'
+                element={<AdminRoles />}
               />
             </Route>
           </Route>

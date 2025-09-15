@@ -47,7 +47,6 @@ export default function AdminAdministradores() {
 
         // Solo si response existe
         if (response && response.data) {
-          console.log('API Response:', response.data); // Para debug sin romper
           setAdmins(response.data.data || []);
           setPagination(
             response.data.pagination || {
@@ -118,6 +117,7 @@ export default function AdminAdministradores() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (formMode === 'editar') {
       setConfirmType('editar');
       setShowConfirm(true);

@@ -7,8 +7,6 @@ import { Rol } from '../models/index.js';
 // ============================
 export const getRoles = async (req, res) => {
   try {
-    console.log('GET /roles v1');
-
     const {
       page = 1,
       limit = 10,
@@ -23,8 +21,8 @@ export const getRoles = async (req, res) => {
     // Filtro de búsqueda por nombre o código
     if (search) {
       whereClause[Op.or] = [
-        { nombre: { [Op.like]: `%${search}%` } },
         { codigo: { [Op.like]: `%${search}%` } },
+        { descripcion: { [Op.like]: `%${search}%` } },
       ];
     }
 
@@ -48,7 +46,7 @@ export const getRoles = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error('Error en getRoles:', err);
+    console.error('Error al obtener los roles:', err);
     res.status(500).json({
       success: false,
       error: 'Error interno del servidor',
@@ -84,7 +82,7 @@ export const getRol = async (req, res) => {
       data: rol,
     });
   } catch (err) {
-    console.error('Error en getRol:', err);
+    console.error('Error al obtener el rol:', err);
     res.status(500).json({
       success: false,
       error: 'Error interno del servidor',
@@ -107,10 +105,9 @@ export const createRol = async (req, res) => {
       });
     }
 
-    const { nombre, codigo, descripcion } = req.body;
+    const { codigo, descripcion } = req.body;
 
     const nuevoRol = await Rol.create({
-      nombre,
       codigo,
       descripcion,
     });
@@ -186,7 +183,7 @@ export const deleteRol = async (req, res) => {
       });
     }
 
-    await rol.destroy();
+    await rol.update({ activo: false });
 
     res.json({
       success: true,

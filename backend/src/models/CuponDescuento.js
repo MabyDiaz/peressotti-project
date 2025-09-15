@@ -23,7 +23,7 @@ const CuponDescuento = sequelize.define(
     codigoCupon: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      //unique: true,
       validate: {
         notEmpty: true,
       },
@@ -54,7 +54,7 @@ const CuponDescuento = sequelize.define(
   },
   {
     tableName: 'cuponesDescuento',
-    timestamps: false,
+    timestamps: true,
   }
 );
 

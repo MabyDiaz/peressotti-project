@@ -130,9 +130,10 @@ function ListadoCategorias() {
                   <CardMedia
                     component='img'
                     image={
-                      cat.imagenURL.includes('drive.google.com/uc?id=')
-                        ? cat.imagenURL.replace('uc?id=', 'thumbnail?id=')
-                        : cat.imagenURL
+                      cat.imagen.includes('drive.google.com/uc?id=')
+                        ? cat.imagen.replace('uc?id=', 'thumbnail?id=')
+                        : cat.imagen
+                        
                     }
                     alt={cat.nombre}
                     sx={{

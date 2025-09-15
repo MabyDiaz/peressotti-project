@@ -17,7 +17,7 @@ const Categoria = sequelize.define(
       allowNull: false,
     },
 
-    imagenURL: {
+    imagen: {
       type: DataTypes.TEXT,
       allowNull: true,
     },

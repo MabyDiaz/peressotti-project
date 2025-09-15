@@ -128,14 +128,14 @@ export const createCategoria = async (req, res, next) => {
     const { nombre } = req.body;
 
     // req.file contiene la imagen subida por multer
-    const imagenURL = req.file ? `/uploads/${req.file.filename}` : '';
+    const imagen = req.file ? `/uploads/${req.file.filename}` : '';
 
     // req.usuario debe venir del middleware de autenticación
     const idAdministrador = req.usuario?.id || null;
 
     const nuevaCategoria = await Categoria.create({
       nombre,
-      imagenURL,
+      imagen,
       activo: true,
       idAdministrador,
     });
@@ -151,9 +151,10 @@ export const createCategoria = async (req, res, next) => {
 };
 
 // Actualizar categoría
-export const updateCategoria = async (req, res, next) => {
+export const updateCategoria = async (req, res) => {
   try {
     const { id } = req.params;
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -165,19 +166,35 @@ export const updateCategoria = async (req, res, next) => {
 
     const categoria = await Categoria.findByPk(id);
     if (!categoria) {
-      return res
-        .status(404)
-        .json({ success: false, error: 'Categoría no encontrada' });
+      return res.status(404).json({
+        success: false,
+        error: 'Categoria no encontrada',
+      });
     }
 
-    await categoria.update(req.body);
+    const { nombre, imagen: imagenBody } = req.body;
+
+    const imagen = req.file
+      ? `/uploads/${req.file.filename}`
+      : imagenBody || categoria.imagen;
+
+    await categoria.update({
+      nombre,
+      imagen,
+    });
+
     res.json({
       success: true,
       data: categoria,
-      message: 'Categoría actualizada exitosamente',
+      message: 'Categoria actualizada exitosamente',
     });
   } catch (err) {
-    next(err);
+    console.error('Error en updateCategoria:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Error interno del servidor',
+      message: 'No se pudo actualizar la categoria',
+    });
   }
 };
 

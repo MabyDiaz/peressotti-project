@@ -51,7 +51,7 @@ router.post(
   '/',
   protect,
   authorize('ADMIN'),
-  upload.single('imagenURL'),
+  upload.single('imagen'),
   validateCategoriaCreate,
   createCategoria
 );
@@ -61,6 +61,7 @@ router.put(
   '/:id',
   protect,
   authorize('ADMIN'),
+  upload.single('imagen'),
   validateCategoriaId,
   validateCategoriaUpdate,
   updateCategoria

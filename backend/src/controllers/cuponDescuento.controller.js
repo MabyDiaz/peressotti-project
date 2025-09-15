@@ -1,6 +1,6 @@
-import { validationResult } from "express-validator";
-import { Op } from "sequelize";
-import { CuponDescuento, Administrador } from "../models/index.js";
+import { validationResult } from 'express-validator';
+import { Op } from 'sequelize';
+import { CuponDescuento, Administrador } from '../models/index.js';
 
 // ============================
 // Listar cupones (ADMIN)
@@ -12,26 +12,32 @@ export const getCupones = async (req, res) => {
       limit = 10,
       activo,
       search,
-      sort = "createdAt",
-      direction = "DESC",
+      sort = 'createdAt',
+      direction = 'DESC',
     } = req.query;
     const offset = (page - 1) * limit;
 
     const whereClause = {};
-    if (activo !== undefined && activo !== "all") {
-      whereClause.activo = activo === "true";
+    if (activo !== undefined && activo !== 'all') {
+      whereClause.activo = activo === 'true';
     }
 
     if (search) {
       whereClause[Op.or] = [
         { nombreCupon: { [Op.like]: `%${search}%` } },
         { codigoCupon: { [Op.like]: `%${search}%` } },
+        { porcentajeDescuento: { [Op.like]: `%${search}%` } },
       ];
     }
 
     const cupones = await CuponDescuento.findAndCountAll({
       where: whereClause,
-      include: [{ model: Administrador, attributes: ["id", "nombre", "email"] }],
+      include: [
+        {
+          model: Administrador,
+          attributes: ['id', 'nombre', 'apellido', 'email'],
+        },
+      ],
       limit: parseInt(limit),
       offset: parseInt(offset),
       order: [[sort, direction.toUpperCase()]],
@@ -48,11 +54,11 @@ export const getCupones = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Error en getCupones:", err);
+    console.error('Error en getCupones:', err);
     res.status(500).json({
       success: false,
-      error: "Error interno del servidor",
-      message: "No se pudieron obtener los cupones",
+      error: 'Error interno del servidor',
+      message: 'No se pudieron obtener los cupones',
     });
   }
 };
@@ -65,23 +71,25 @@ export const getCuponById = async (req, res) => {
     const { id } = req.params;
 
     const cupon = await CuponDescuento.findByPk(id, {
-      include: [{ model: Administrador, attributes: ["id", "nombre", "email"] }],
+      include: [
+        { model: Administrador, attributes: ['id', 'nombre', 'email'] },
+      ],
     });
 
     if (!cupon) {
       return res.status(404).json({
         success: false,
-        error: "Cupón no encontrado",
+        error: 'Cupón no encontrado',
       });
     }
 
     res.json({ success: true, data: cupon });
   } catch (err) {
-    console.error("Error en getCuponById:", err);
+    console.error('Error en getCuponById:', err);
     res.status(500).json({
       success: false,
-      error: "Error interno del servidor",
-      message: "No se pudo obtener el cupón",
+      error: 'Error interno del servidor',
+      message: 'No se pudo obtener el cupón',
     });
   }
 };
@@ -95,13 +103,19 @@ export const createCupon = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        error: "Datos inválidos",
+        error: 'Datos inválidos',
         details: errors.array(),
       });
     }
 
-    const { nombreCupon, codigoCupon, porcentajeDescuento, idAdministrador } =
-      req.body;
+    const { nombreCupon, codigoCupon, porcentajeDescuento } = req.body;
+
+    const idAdministrador = req.usuario?.id;
+    if (!idAdministrador) {
+      return res
+        .status(401)
+        .json({ error: 'No autorizado: falta administrador' });
+    }
 
     const nuevoCupon = await CuponDescuento.create({
       nombreCupon,
@@ -114,14 +128,14 @@ export const createCupon = async (req, res) => {
     res.status(201).json({
       success: true,
       data: nuevoCupon,
-      message: "Cupón creado exitosamente",
+      message: 'Cupón creado exitosamente',
     });
   } catch (err) {
-    console.error("Error en createCupon:", err);
+    console.error('Error en createCupon:', err);
     res.status(500).json({
       success: false,
-      error: "Error interno del servidor",
-      message: "No se pudo crear el cupón",
+      error: 'Error interno del servidor',
+      message: 'No se pudo crear el cupón',
     });
   }
 };
@@ -137,7 +151,7 @@ export const updateCupon = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        error: "Datos inválidos",
+        error: 'Datos inválidos',
         details: errors.array(),
       });
     }
@@ -146,7 +160,7 @@ export const updateCupon = async (req, res) => {
     if (!cupon) {
       return res.status(404).json({
         success: false,
-        error: "Cupón no encontrado",
+        error: 'Cupón no encontrado',
       });
     }
 
@@ -155,14 +169,14 @@ export const updateCupon = async (req, res) => {
     res.json({
       success: true,
       data: cupon,
-      message: "Cupón actualizado exitosamente",
+      message: 'Cupón actualizado exitosamente',
     });
   } catch (err) {
-    console.error("Error en updateCupon:", err);
+    console.error('Error en updateCupon:', err);
     res.status(500).json({
       success: false,
-      error: "Error interno del servidor",
-      message: "No se pudo actualizar el cupón",
+      error: 'Error interno del servidor',
+      message: 'No se pudo actualizar el cupón',
     });
   }
 };
@@ -178,7 +192,7 @@ export const deleteCupon = async (req, res) => {
     if (!cupon) {
       return res.status(404).json({
         success: false,
-        error: "Cupón no encontrado",
+        error: 'Cupón no encontrado',
       });
     }
 
@@ -186,14 +200,14 @@ export const deleteCupon = async (req, res) => {
 
     res.json({
       success: true,
-      message: "Cupón eliminado exitosamente",
+      message: 'Cupón eliminado exitosamente',
     });
   } catch (err) {
-    console.error("Error en deleteCupon:", err);
+    console.error('Error en deleteCupon:', err);
     res.status(500).json({
       success: false,
-      error: "Error interno del servidor",
-      message: "No se pudo eliminar el cupón",
+      error: 'Error interno del servidor',
+      message: 'No se pudo eliminar el cupón',
     });
   }
 };
@@ -212,21 +226,21 @@ export const validarCodigoCupon = async (req, res) => {
     if (!cupon) {
       return res.status(404).json({
         success: false,
-        error: "Cupón inválido o inactivo",
+        error: 'Cupón inválido o inactivo',
       });
     }
 
     res.json({
       success: true,
       data: cupon,
-      message: "Cupón válido",
+      message: 'Cupón válido',
     });
   } catch (err) {
-    console.error("Error en validarCodigoCupon:", err);
+    console.error('Error en validarCodigoCupon:', err);
     res.status(500).json({
       success: false,
-      error: "Error interno del servidor",
-      message: "No se pudo validar el cupón",
+      error: 'Error interno del servidor',
+      message: 'No se pudo validar el cupón',
     });
   }
 };

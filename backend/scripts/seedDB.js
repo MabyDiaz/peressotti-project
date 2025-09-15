@@ -8,9 +8,9 @@ import {
   Cliente,
   Categoria,
   Producto,
-  Rol,  
+  Rol,
   AdministradorRol,
-  ClienteRol,  
+  ClienteRol,
   MetodoPago,
   CuponDescuento,
 } from '../src/models/index.js';
@@ -78,6 +78,38 @@ async function seedDatabase() {
       defaults: { idAdministrador: admin.id, idRol: rolAdmin.id },
     });
 
+    await AdministradorRol.findOrCreate({
+      where: { idAdministrador: admin.id, idRol: rolAdmin.id },
+      defaults: { idAdministrador: admin.id, idRol: rolAdmin.id },
+    });
+
+    // =============================
+    // 3.b Crear diseñador y asignar rol DISENADOR
+    // =============================
+    let disenador = await Administrador.findOne({
+      where: { email: 'disenador@example.com' },
+    });
+    if (!disenador) {
+      const disenadorPassword = await bcrypt.hash('Disenador1234', 10);
+      disenador = await Administrador.create({
+        nombre: 'Carlos',
+        apellido: 'Diseñador',
+        telefono: '4444444444',
+        email: 'disenador@example.com',
+        contrasena: disenadorPassword,
+        activo: true,
+      });
+    } else {
+      // Actualizar contraseña para asegurarte que sea la correcta
+      const hashed = await bcrypt.hash('Disenador1234', 10);
+      await disenador.update({ contrasena: hashed, activo: true });
+    }
+
+    await AdministradorRol.findOrCreate({
+      where: { idAdministrador: disenador.id, idRol: rolDisenador.id },
+      defaults: { idAdministrador: disenador.id, idRol: rolDisenador.id },
+    });
+
     // =============================
     // 4. Crear clientes y asignar rol CLIENTE
     // =============================
@@ -133,25 +165,25 @@ async function seedDatabase() {
     const categorias = [
       {
         nombre: 'Comerciales',
-        imagenURL: '/cat1.jpg',
+        imagen: '/uploads/cat1.jpg',
         activo: true,
         idAdministrador: admin.id,
       },
       {
         nombre: 'Escolares',
-        imagenURL: '/cat4.jpg',
+        imagen: '/uploads/cat4.jpg',
         activo: true,
         idAdministrador: admin.id,
       },
       {
         nombre: 'Fiestas y Eventos',
-        imagenURL: '/cat2.jpg',
+        imagen: '/uploads/cat2.jpg',
         activo: true,
         idAdministrador: admin.id,
       },
       {
         nombre: 'Regalos',
-        imagenURL: '/cat3.jpg',
+        imagen: '/uploads/cat3.jpg',
         activo: true,
         idAdministrador: admin.id,
       },

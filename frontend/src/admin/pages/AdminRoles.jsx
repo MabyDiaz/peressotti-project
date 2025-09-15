@@ -1,26 +1,24 @@
-import React from 'react';
 import { useEffect, useState, useCallback } from 'react';
 import api from '../../api/axios';
 import { toast } from 'react-toastify';
-import { FaTag, FaBarcode, FaPercent } from 'react-icons/fa';
+import { FaUser, FaPhone, FaEnvelope, FaLock } from 'react-icons/fa';
 import Pagination from '../components/Pagination.jsx';
 
-export default function AdminCupones() {
-  const [cupones, setCupones] = useState([]);
+export default function AdminRoles() {
+  const [roles, setRoles] = useState([]);
   const [search, setSearch] = useState('');
   const [estado, setEstado] = useState('todos');
 
   const [showForm, setShowForm] = useState(false);
   const [formMode, setFormMode] = useState('crear'); // 'crear', 'editar', 'ver'
-  const [selectedCupon, setSelectedCupon] = useState(null);
+  const [selectedRol, setSelectedRol] = useState(null);
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmType, setConfirmType] = useState(null);
 
   const [formData, setFormData] = useState({
-    nombreCupon: '',
-    codigoCupon: '',
-    porcentajeDescuento: '',
+    codigo: '',
+    descripcion: '',
   });
 
   const [pagination, setPagination] = useState({
@@ -30,11 +28,11 @@ export default function AdminCupones() {
     itemsPerPage: 10,
   });
 
-  // Fetch cupones desde la API
-  const fetchCupones = useCallback(
+  // Fetch roles desde la API
+  const fetchRoles = useCallback(
     async (page = 1) => {
       try {
-        const response = await api.get('/cupones', {
+        const response = await api.get('/roles', {
           params: {
             page,
             limit: 10,
@@ -46,7 +44,7 @@ export default function AdminCupones() {
 
         // Solo si response existe
         if (response && response.data) {
-          setCupones(response.data.data || []);
+          setRoles(response.data.data || []);
           setPagination(
             response.data.pagination || {
               currentPage: 1,
@@ -57,37 +55,32 @@ export default function AdminCupones() {
           );
         }
       } catch (error) {
-        console.error(
-          'Error al cargar cupones de descuento:',
-          error?.response || error
-        );
-        toast.error('No se pudieron cargar los cupones de descuento');
+        console.error('Error al cargar roles:', error?.response || error);
+        toast.error('No se pudieron cargar los roles');
       }
     },
     [search, estado]
   );
 
   useEffect(() => {
-    fetchCupones(pagination.currentPage);
-  }, [fetchCupones, pagination.currentPage]);
+    fetchRoles(pagination.currentPage);
+  }, [fetchRoles, pagination.currentPage]);
 
-  const openForm = (mode, cupon = null) => {
+  const openForm = (mode, rol = null) => {
     setFormMode(mode);
-    setSelectedCupon(cupon);
+    setSelectedRol(rol);
 
-    if (cupon) {
+    if (rol) {
       // editar o ver: llenar con datos existentes
       setFormData({
-        nombreCupon: cupon.nombreCupon || '',
-        codigoCupon: cupon.codigoCupon || '',
-        porcentajeDescuento: cupon.porcentajeDescuento || '',
+        codigo: rol.codigo || '',
+        descripcion: rol.descripcion || '',
       });
     } else {
       // crear: limpiar
       setFormData({
-        nombreCupon: '',
-        codigoCupon: '',
-        porcentajeDescuento: '',
+        codigo: '',
+        descripcion: '',
       });
     }
 
@@ -96,17 +89,17 @@ export default function AdminCupones() {
 
   const closeForm = () => {
     setShowForm(false);
-    setSelectedCupon(null);
+    setSelectedRol(null);
   };
 
-  const openConfirm = (type, admin) => {
-    setSelectedCupon(admin);
+  const openConfirm = (type, rol) => {
+    setSelectedRol(rol);
     setConfirmType(type); // 'eliminar' o 'editar'
     setShowConfirm(true);
   };
 
   const closeConfirm = () => {
-    setSelectedCupon(null);
+    setSelectedRol(null);
     setShowConfirm(false);
   };
 
@@ -117,15 +110,15 @@ export default function AdminCupones() {
       setConfirmType('editar');
       setShowConfirm(true);
     } else if (formMode === 'crear') {
-      crearCupon();
+      crearRol();
     }
   };
 
-  const crearCupon = async () => {
+  const crearRol = async () => {
     try {
-      const response = await api.post('/cupones', formData);
-      toast.success(response.data.message || 'Cupon de Descuento creado');
-      fetchCupones();
+      const response = await api.post('/roles', formData);
+      toast.success(response.data.message || 'Rol creado');
+      fetchRoles();
       closeForm();
     } catch (error) {
       const data = error.response?.data;
@@ -142,19 +135,15 @@ export default function AdminCupones() {
       {/* Header */}
       <div className='flex items-center justify-between'>
         <div>
-          <h2 className='text-2xl font-bold'>
-            Gestión de Cupones de Descuento
-          </h2>
-          <p className='text-gray-500 text-sm'>
-            Administra los cupones de descuento
-          </p>
+          <h2 className='text-2xl font-bold'>Gestión de Roles</h2>
+          <p className='text-gray-500 text-sm'>Administra los roles</p>
         </div>
 
         {/* Toolbar */}
         <div className='flex gap-2 items-center'>
           <input
             type='text'
-            placeholder='Buscar cupon...'
+            placeholder='Buscar rol...'
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className='border border-gray-300 rounded text-sm px-3 py-1 focus:outline-none focus:ring focus:border-blue-300'
@@ -170,7 +159,7 @@ export default function AdminCupones() {
           <button
             onClick={() => openForm('crear')}
             className='bg-red-600 text-white text-sm px-4 py-1 rounded hover:bg-red-700'>
-            Nuevo Cupon
+            Nuevo Rol
           </button>
         </div>
       </div>
@@ -184,13 +173,10 @@ export default function AdminCupones() {
                 ID
               </th>
               <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
-                Nombre Cupon
+                Codigo
               </th>
               <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
-                Codigo Cupon
-              </th>
-              <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
-                Procentaje de Descuento
+                Descripcion
               </th>
               <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Estado
@@ -201,14 +187,11 @@ export default function AdminCupones() {
             </tr>
           </thead>
           <tbody className='divide-y divide-gray-200 text-xs'>
-            {cupones.map((a) => (
+            {roles.map((a) => (
               <tr key={a.id}>
                 <td className='px-4 py-2'>{a.id}</td>
-                <td className='px-4 py-2'>{a.nombreCupon}</td>
-                <td className='px-4 py-2'>{a.codigoCupon}</td>
-                <td className='px-4 py-2 !text-center'>
-                  {a.porcentajeDescuento}
-                </td>
+                <td className='px-4 py-2'>{a.codigo}</td>
+                <td className='px-4 py-2'>{a.descripcion}</td>
                 <td className='px-4 py-2 !text-center'>
                   {a.activo ? 'Activo' : 'Inactivo'}
                 </td>
@@ -237,7 +220,7 @@ export default function AdminCupones() {
 
       <Pagination
         pagination={pagination}
-        onPageChange={(page) => fetchCupones(page)}
+        onPageChange={(page) => fetchRoles(page)}
       />
 
       {/* Modal Form */}
@@ -246,43 +229,26 @@ export default function AdminCupones() {
           <div className='bg-white p-6 rounded shadow w-96'>
             <h3 className='bg-red-600 text-white text-sm font-bold mb-4 text-center p-2 rounded uppercase'>
               {formMode === 'crear'
-                ? 'Crear Cupón de Descuento'
+                ? 'Registrar Rol'
                 : formMode === 'editar'
-                ? 'Editar Cupón de Descuento'
-                : 'Ver Cupón de Descuento'}
+                ? 'Editar Rol'
+                : 'Ver Rol'}
             </h3>
 
             <form
-              id='form-admin'
+              id='form-rol'
               onSubmit={handleSubmit}
               className='flex flex-col gap-4'>
-              {/* Nombre del Cupón */}
+              {/* Nombre */}
               <div className='row flex items-center border rounded px-3 py-2 gap-2'>
-                <FaTag />
-                <input
-                  type='text'
-                  name='nombre'
-                  placeholder='Nombre del cupón'
-                  value={formData.nombreCupon}
-                  onChange={(e) =>
-                    setFormData({ ...formData, nombreCupon: e.target.value })
-                  }
-                  disabled={formMode === 'ver'}
-                  required
-                  className='flex-1 outline-none'
-                />
-              </div>
-
-              {/* Código del Cupón */}
-              <div className='row flex items-center border rounded px-3 py-2 gap-2'>
-                <FaBarcode />
+                <FaUser />
                 <input
                   type='text'
                   name='codigo'
-                  placeholder='Código del cupón'
-                  value={formData.codigoCupon}
+                  placeholder='Código'
+                  value={formData.codigo}
                   onChange={(e) =>
-                    setFormData({ ...formData, codigoCupon: e.target.value })
+                    setFormData({ ...formData, codigo: e.target.value })
                   }
                   disabled={formMode === 'ver'}
                   required
@@ -290,19 +256,16 @@ export default function AdminCupones() {
                 />
               </div>
 
-              {/* Porcentaje de Descuento */}
+              {/* Apellido */}
               <div className='row flex items-center border rounded px-3 py-2 gap-2'>
-                <FaPercent />
+                <FaUser />
                 <input
                   type='text'
-                  name='porcentaje'
-                  placeholder='Porcentaje de Descuento'
-                  value={formData.porcentajeDescuento}
+                  name='descripcion'
+                  placeholder='Descripción'
+                  value={formData.descripcion}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      porcentajeDescuento: e.target.value,
-                    })
+                    setFormData({ ...formData, descripcion: e.target.value })
                   }
                   disabled={formMode === 'ver'}
                   required
@@ -355,13 +318,13 @@ export default function AdminCupones() {
           <div className='bg-white p-6 rounded shadow w-80 text-center'>
             <h3 className='text-lg font-bold mb-4'>
               {confirmType === 'eliminar'
-                ? 'Eliminar Cupón'
+                ? 'Eliminar Rol'
                 : 'Confirmar cambios'}
             </h3>
             <p className='mb-4'>
               {confirmType === 'eliminar'
-                ? `¿Estás seguro de eliminar el cupón "${selectedCupon?.nombreCupon}"?`
-                : '¿Está seguro que desea modificar este cupón?'}
+                ? `¿Estás seguro de eliminar el rol "${selectedRol?.codigo}"?`
+                : '¿Está seguro que desea modificar este rol?'}
             </p>
             <div className='flex justify-around mt-4'>
               <button
@@ -369,17 +332,17 @@ export default function AdminCupones() {
                 onClick={async () => {
                   if (confirmType === 'eliminar') {
                     try {
-                      await api.delete(`/cupones/${selectedCupon.id}`, {
+                      await api.delete(`/roles/${selectedRol.id}`, {
                         headers: {
                           Authorization: `Bearer ${localStorage.getItem(
                             'accessToken'
                           )}`,
                         },
                       });
-                      toast.success('Cupón eliminado exitosamente');
-                      fetchCupones();
+                      toast.success('Rol eliminado exitosamente');
+                      fetchRoles();
                       setShowConfirm(false);
-                      setSelectedCupon(null);
+                      setSelectedRol(null);
                     } catch (error) {
                       toast.error(
                         error.response?.data?.message || 'Error al eliminar'
@@ -388,13 +351,11 @@ export default function AdminCupones() {
                   } else if (confirmType === 'editar') {
                     try {
                       const payload = {
-                        nombreCupon: formData.nombreCupon,
-                        codigoCupon: formData.codigoCupon,
-                        porcentajeDescuento: formData.porcentajeDescuento,
-                        email: formData.email,
+                        codigo: formData.codigo,
+                        descripcion: formData.descripcion,
                       };
                       const res = await api.put(
-                        `/cupones/${selectedCupon.id}`,
+                        `/roles/${selectedRol.id}`,
                         payload,
                         {
                           headers: {
@@ -405,7 +366,7 @@ export default function AdminCupones() {
                         }
                       );
                       toast.success(res.data.message);
-                      fetchCupones();
+                      fetchRoles();
                       setShowConfirm(false);
                       closeForm();
                     } catch (error) {
