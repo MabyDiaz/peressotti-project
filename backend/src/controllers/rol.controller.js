@@ -11,12 +11,17 @@ export const getRoles = async (req, res) => {
       page = 1,
       limit = 10,
       search,
+      activo,
       sort = 'createdAt',
       direction = 'DESC',
     } = req.query;
     const offset = (page - 1) * limit;
 
     const whereClause = {};
+
+    if (activo !== undefined && activo !== 'all') {
+      whereClause.activo = activo === 'true';
+    }
 
     // Filtro de búsqueda por nombre o código
     if (search) {

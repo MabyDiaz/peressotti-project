@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect, useState, useCallback } from 'react';
 import api from '../../api/axios';
 import { toast } from 'react-toastify';
-import { FaTag, FaBarcode, FaPercent } from 'react-icons/fa';
+import { FaTag, FaBarcode, FaPercent, FaSearch, FaPlus } from 'react-icons/fa';
 import Pagination from '../components/Pagination.jsx';
 
 export default function AdminCupones() {
@@ -152,13 +152,16 @@ export default function AdminCupones() {
 
         {/* Toolbar */}
         <div className='flex gap-2 items-center'>
-          <input
-            type='text'
-            placeholder='Buscar cupon...'
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className='border border-gray-300 rounded text-sm px-3 py-1 focus:outline-none focus:ring focus:border-blue-300'
-          />
+          <div className='relative'>
+            <input
+              type='text'
+              placeholder='Buscar cupon...'
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className='border border-gray-300 rounded text-sm px-3 py-1 focus:outline-none focus:ring focus:border-blue-300'
+            />
+            <FaSearch className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
+          </div>
           <select
             value={estado}
             onChange={(e) => setEstado(e.target.value)}
@@ -169,7 +172,8 @@ export default function AdminCupones() {
           </select>
           <button
             onClick={() => openForm('crear')}
-            className='bg-red-600 text-white text-sm px-4 py-1 rounded hover:bg-red-700'>
+            className='flex items-center gap-2 bg-red-600 text-white text-sm px-4 py-1 rounded hover:bg-red-700'>
+            <FaPlus className='text-white text-xs' />
             Nuevo Cupon
           </button>
         </div>

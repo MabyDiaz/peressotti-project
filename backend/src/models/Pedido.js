@@ -25,7 +25,12 @@ const Pedido = sequelize.define(
       defaultValue: DataTypes.NOW,
     },
 
-    estado: {
+    activo: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+
+    estadoPedido: {
       type: DataTypes.ENUM(
         'pendiente',
         'enProduccion',

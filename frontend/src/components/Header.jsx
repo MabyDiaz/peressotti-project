@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { useCarrito } from '../hooks/useCarrito.js';
 
 import api from '../api/axios';
@@ -108,11 +108,15 @@ const Header = () => {
     handleCloseUserMenu();
   };
 
+  const linkClass = ({ isActive }) =>
+    isActive
+      ? 'bg-red-600 text-white py-2 px-4 rounded transition-colors duration-200'
+      : 'text-white py-2 px-4 rounded hover:bg-red-600 hover:text-white transition-colors duration-200';
+
   return (
     <AppBar
       position='sticky'
-      color='default'
-      sx={{ backgroundColor: '#ffffff' }}>
+      sx={{ backgroundColor: '#1e2939', color: '#fff' }}>
       <Container maxWidth='xl'>
         <Toolbar className='h-20 flex justify-between items-center w-full'>
           {/* IZQUIERDA: menú hamburguesa + logo */}
@@ -122,7 +126,7 @@ const Header = () => {
               <IconButton
                 edge='start'
                 onClick={handleOpenNavMenu}
-                sx={{ color: 'black', '&:hover': { color: '#2B7FFF' } }}>
+                sx={{ color: '#ffffff', '&:hover': { color: '#2B7FFF' } }}>
                 <MenuIcon />
               </IconButton>
             </Box>
@@ -152,11 +156,10 @@ const Header = () => {
                     <Button
                       onClick={handleOpenProductosMenu}
                       sx={{
-                        color: 'black',
                         textTransform: 'uppercase',
                         fontSize: '0.95rem',
                         fontWeight: 500,
-                        '&:hover': { color: '#2B7FFF' },
+                        '&:hover': { color: '#E7000B' },
                       }}>
                       {page.name}
                       {anchorElProductos ? <ExpandLess /> : <ExpandMore />}
@@ -186,15 +189,9 @@ const Header = () => {
                 ) : (
                   <Button
                     key={page.name}
-                    component={Link}
+                    component={NavLink}
                     to={page.path}
-                    sx={{
-                      color: 'black',
-                      textTransform: 'uppercase',
-                      fontSize: '0.95rem',
-                      fontWeight: 500,
-                      '&:hover': { color: '#2B7FFF' },
-                    }}>
+                    className={linkClass}>
                     {page.name}
                   </Button>
                 )
@@ -209,7 +206,7 @@ const Header = () => {
               <Badge
                 badgeContent={cantidadTotal}
                 color='error'>
-                <ShoppingCartIcon sx={{ color: 'black' }} />
+                <ShoppingCartIcon sx={{ color: 'white' }} />
               </Badge>
             </IconButton>
 

@@ -46,17 +46,16 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-black/70'>
       <div className='bg-white p-6 rounded shadow w-96'>
-        {/* Franja roja con título */}
         <h3 className='bg-red-600 text-white text-sm font-bold mb-4 text-center p-2 rounded uppercase'>
-          Registrar Cliente
+          Registrarse
         </h3>
 
         <form
           onSubmit={handleSubmit}
           className='flex flex-col gap-4'>
           {/* Nombre */}
-          <div className='flex items-center border rounded px-3 py-2 gap-2'>
-            <FaUser />
+          <div className='flex items-center border border-gray-600 rounded px-3 py-2 gap-2'>
+            <FaUser className='text-gray-600' />
             <input
               type='text'
               name='nombre'
@@ -64,13 +63,13 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
               value={formData.nombre}
               onChange={handleChange}
               required
-              className='flex-1 outline-none'
+              className='flex-1 outline-none  placeholder-gray-400'
             />
           </div>
 
           {/* Apellido */}
-          <div className='flex items-center border rounded px-3 py-2 gap-2'>
-            <FaUser />
+          <div className='flex items-center border border-gray-600 rounded px-3 py-2 gap-2'>
+            <FaUser className='text-gray-600' />
             <input
               type='text'
               name='apellido'
@@ -83,8 +82,8 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
           </div>
 
           {/* Teléfono */}
-          <div className='flex items-center border rounded px-3 py-2 gap-2'>
-            <FaPhone />
+          <div className='flex items-center border border-gray-600 rounded px-3 py-2 gap-2'>
+            <FaPhone className='text-gray-600' />
             <input
               type='text'
               name='telefono'
@@ -97,8 +96,8 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
           </div>
 
           {/* Email */}
-          <div className='flex items-center border rounded px-3 py-2 gap-2'>
-            <FaEnvelope />
+          <div className='flex items-center border border-gray-600 rounded px-3 py-2 gap-2'>
+            <FaEnvelope className='text-gray-600' />
             <input
               type='email'
               name='email'
@@ -111,8 +110,8 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
           </div>
 
           {/* Contraseña */}
-          <div className='flex items-center border rounded px-3 py-2 gap-2'>
-            <FaLock />
+          <div className='flex items-center border border-gray-600 rounded px-3 py-2 gap-2'>
+            <FaLock className='text-gray-600' />
             <input
               type='password'
               name='contrasena'

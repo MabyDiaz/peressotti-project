@@ -37,21 +37,17 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
   if (!open) return null;
 
   return (
-    <div className='modal-backdrop'>
-      <div
-        className='modal'
-        style={{ maxWidth: '400px' }}>
-        <h2
-          className='text-xl font-bold mb-4'
-          style={{ color: 'var(--dark)', textAlign: 'center' }}>
+    <div className='fixed inset-0 flex items-center justify-center bg-black/70'>
+      <div className='bg-white p-6 rounded shadow w-96'>
+        <h2 className='bg-red-600 text-white text-sm font-bold mb-4 text-center p-2 rounded uppercase'>
           Iniciar sesión
         </h2>
         <form
           onSubmit={handleSubmit}
           className='flex flex-col gap-4'>
           {/* Email */}
-          <div className='row flex items-center border rounded px-3 py-2 gap-2'>
-            <FaUser />
+          <div className='row flex items-center border border-gray-800 rounded px-3 py-2 gap-2'>
+            <FaUser className='text-gray-600' />
             <input
               type='email'
               name='email'
@@ -59,12 +55,12 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
               value={formData.email}
               onChange={handleChange}
               required
-              className='flex-1 outline-none'
+              className='flex-1 outline-none  placeholder-gray-400'
             />
           </div>
           {/* Contraseña */}
-          <div className='row flex items-center border rounded px-3 py-2 gap-2'>
-            <FaLock />
+          <div className='row flex items-center border border-gray-800 rounded px-3 py-2 gap-2'>
+            <FaLock className='text-gray-600' />
             <input
               type='password'
               name='contrasena'
@@ -72,23 +68,29 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
               value={formData.contrasena}
               onChange={handleChange}
               required
-              className='flex-1 outline-none'
+              className='flex-1   placeholder-gray-400'
             />
           </div>
-          {/* Botón */}
-          <div className='row button'>
-            <input
+
+          <div className='flex justify-between mt-2'>
+            <button
               type='submit'
-              value='Iniciar sesión'
-              className='btn btn-primary w-full'
-            />
+              className='bg-red-600 hover:bg-red-700 text-white text-xs uppercase font-bold p-2 rounded transition-colors duration-200 w-1/2 mr-2'>
+              Iniciar sesión
+            </button>
+            <button
+              type='button'
+              onClick={onClose}
+              className='bg-gray-600 text-xs hover:bg-gray-700 text-white font-bold uppercase p-2 rounded transition-colors duration-200 w-1/2 ml-2'>
+              Cerrar
+            </button>
           </div>
-          {/* Link para registro */}
-          <div className='signup-link text-center text-sm mt-2'>
+          {/* Link para login */}
+          <div className='signup-link text-center text-gray-800 text-sm mt-2'>
             ¿No tenés cuenta?{' '}
             <a
               href='#'
-              className='text-accent font-semibold hover:underline'
+              className='text-red-600 font-semibold hover:underline'
               onClick={() => {
                 onClose();
                 onSwitchToRegister();
@@ -98,11 +100,12 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
           </div>
         </form>
         {/* Botón de cerrar */}
-        <button
+
+        {/* <button
           onClick={onClose}
           className='btn btn-danger mt-4 w-full'>
           Cerrar
-        </button>
+        </button> */}
       </div>
     </div>
   );

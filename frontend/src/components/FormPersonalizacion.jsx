@@ -1,4 +1,3 @@
-// src/components/FormPersonalizacion.jsx
 import { useState } from 'react';
 import {
   Dialog,

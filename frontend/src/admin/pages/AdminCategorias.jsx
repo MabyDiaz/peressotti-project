@@ -3,6 +3,7 @@ import api from '../../api/axios';
 import { toast } from 'react-toastify';
 import { getImageUrl } from '../../utils/getImageUrl.js';
 import Pagination from '../components/Pagination.jsx';
+import { FaSearch, FaPlus } from 'react-icons/fa';
 
 export default function AdminCategorias() {
   const [categorias, setCategorias] = useState([]);
@@ -141,13 +142,16 @@ export default function AdminCategorias() {
 
         {/* Toolbar */}
         <div className='flex gap-2 items-center'>
-          <input
-            type='text'
-            placeholder='Buscar...'
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className='border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring focus:border-blue-300'
-          />
+          <div className='relative'>
+            <input
+              type='text'
+              placeholder='Buscar categoria...'
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className='border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring focus:border-blue-300'
+            />
+            <FaSearch className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400' />
+          </div>
 
           <select
             value={estado}
@@ -160,7 +164,8 @@ export default function AdminCategorias() {
 
           <button
             onClick={() => openForm('crear')}
-            className='bg-red-600 text-white text-sm px-4 py-1 rounded hover:bg-red-700'>
+            className='flex items-center gap-2 bg-red-600 text-white text-sm px-4 py-1 rounded hover:bg-red-700'>
+            <FaPlus className='text-white text-xs' />
             Nueva Categoria
           </button>
         </div>

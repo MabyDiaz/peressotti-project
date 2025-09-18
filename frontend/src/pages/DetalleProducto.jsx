@@ -739,8 +739,8 @@ const DetalleProducto = () => {
                 variant='body2'
                 color='text.secondary'
                 sx={{ mt: 1 }}>
-                Debes completar el formulario para poder agregar el producto al
-                carrito.
+                Para poder agregar el producto al carrito, te pedimos completar
+                el formulario.
               </Typography>
 
               <FormPersonalizacion
