@@ -4,7 +4,7 @@ import img from '../assets/img/imanesalfabeto.jpg';
 
 const BloqueHero = () => {
   return (
-    <Box className='bg-blue-500 text-white py-12 mt-10'>
+    <Box className='bg-[#0E264A] text-white py-12 mt-10'>
       <Container maxWidth='lg'>
         <Grid
           container

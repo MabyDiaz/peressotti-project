@@ -51,7 +51,7 @@ const ProcesoCompra = () => {
   }, [steps.length]);
 
   return (
-    <div className='bg-[#d0d3c5] text-gray-800 py-12'>
+    <div className='bg-[#F9FAFB] text-[#1F2937] py-12'>
       <div className='container mx-auto px-4'>
         <h2 className='text-center text-3xl font-bold mb-2'>¿Cómo funciona?</h2>
         <p className='text-center text-gray-600 mb-10'>
@@ -78,7 +78,7 @@ const ProcesoCompra = () => {
               </div>
               <h3
                 className={`mt-3 font-semibold ${
-                  index <= currentStep ? 'text-gray-900' : 'text-gray-500'
+                  index <= currentStep ? 'text-[#1F2937]' : 'text-gray-500'
                 }`}>
                 {step.title}
               </h3>

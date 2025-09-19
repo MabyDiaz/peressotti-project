@@ -67,7 +67,7 @@ function ListadoCategorias() {
   }
 
   return (
-    <Box className='pt-15 pb-15 bg-blue-500 text-white'>
+    <Box className='pt-15 pb-15 bg-[#1F2937] text-white'>
       <Typography
         variant='h4'
         align='center'
@@ -133,7 +133,6 @@ function ListadoCategorias() {
                       cat.imagen.includes('drive.google.com/uc?id=')
                         ? cat.imagen.replace('uc?id=', 'thumbnail?id=')
                         : cat.imagen
-                        
                     }
                     alt={cat.nombre}
                     sx={{

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { useNavigate, NavLink, useLocation } from 'react-router-dom';
 import { useCarrito } from '../hooks/useCarrito.js';
 
 import api from '../api/axios';
@@ -39,17 +39,21 @@ const settings = ['Iniciar Sesión', 'Registrarse', 'Cerrar Sesión'];
 const Header = () => {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const [anchorElProductos, setAnchorElProductos] = useState(null);
+  const [anchorElProductosDesktop, setAnchorElProductosDesktop] =
+    useState(null);
+  const [anchorElProductosMobile, setAnchorElProductosMobile] = useState(null);
   const [categorias, setCategorias] = useState([]);
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
 
-  // const { cantidadTotal } = useCarrito();
-  const navigate = useNavigate();
-
   const { carrito, cantidadTotal } = useCarrito();
-  console.log('Carrito en Header:', carrito);
-  console.log('Cantidad total en Header:', cantidadTotal);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  console.log(carrito);
+
+  // Detectar si estamos en una ruta de categoría
+  const isCategoriaPage = location.pathname.startsWith('/categoria/');
 
   // Obtener categorías al cargar el componente
   useEffect(() => {
@@ -78,24 +82,34 @@ const Header = () => {
     setAnchorElUser(null);
   };
 
-  const handleOpenProductosMenu = (event) => {
-    setAnchorElProductos(event.currentTarget);
+  // Para escritorio
+  const handleOpenProductosMenuDesktop = (event) => {
+    setAnchorElProductosDesktop(event.currentTarget);
   };
 
-  const handleCloseProductosMenu = () => {
-    setAnchorElProductos(null);
+  const handleCloseProductosMenuDesktop = () => {
+    setAnchorElProductosDesktop(null);
+  };
+
+  // Para móvil
+  const handleOpenProductosMenuMobile = (event) => {
+    setAnchorElProductosMobile(event.currentTarget);
+  };
+
+  const handleCloseProductosMenuMobile = () => {
+    setAnchorElProductosMobile(null);
   };
 
   // Función para navegar a la categoría seleccionada
   const handleCategoriaClick = (categoriaId) => {
     navigate(`/categoria/${categoriaId}`);
-    handleCloseProductosMenu();
+    handleCloseProductosMenuDesktop();
   };
 
   // Función para navegar a la categoría desde el menú móvil
   const handleCategoriaClickMobile = (categoriaId) => {
     navigate(`/categoria/${categoriaId}`);
-    handleCloseProductosMenu();
+    handleCloseProductosMenuMobile();
     handleCloseNavMenu();
   };
 
@@ -108,17 +122,12 @@ const Header = () => {
     handleCloseUserMenu();
   };
 
-  const linkClass = ({ isActive }) =>
-    isActive
-      ? 'bg-red-600 text-white py-2 px-4 rounded transition-colors duration-200'
-      : 'text-white py-2 px-4 rounded hover:bg-red-600 hover:text-white transition-colors duration-200';
-
   return (
     <AppBar
       position='sticky'
-      sx={{ backgroundColor: '#1e2939', color: '#fff' }}>
+      sx={{ backgroundColor: '#1F2937', color: '#fff' }}>
       <Container maxWidth='xl'>
-        <Toolbar className='h-20 flex justify-between items-center w-full'>
+        <Toolbar className='h-20 flex justify-between items-center w-full '>
           {/* IZQUIERDA: menú hamburguesa + logo */}
           <Box className='flex items-center gap-2'>
             {/* Menu hamburguesa SOLO en mobile */}
@@ -126,7 +135,16 @@ const Header = () => {
               <IconButton
                 edge='start'
                 onClick={handleOpenNavMenu}
-                sx={{ color: '#ffffff', '&:hover': { color: '#2B7FFF' } }}>
+                sx={{
+                  color: '#ffffff',
+                  backgroundColor: 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#dc2626',
+                    color: '#fff',
+                  },
+                  borderRadius: '6px',
+                  padding: '8px',
+                }}>
                 <MenuIcon />
               </IconButton>
             </Box>
@@ -154,31 +172,67 @@ const Header = () => {
                 page.hasDropdown ? (
                   <Box key={page.name}>
                     <Button
-                      onClick={handleOpenProductosMenu}
+                      onClick={handleOpenProductosMenuDesktop}
                       sx={{
-                        textTransform: 'uppercase',
-                        fontSize: '0.95rem',
+                        color: 'white',
+                        backgroundColor: isCategoriaPage
+                          ? '#dc2626'
+                          : 'transparent',
+                        '&:hover': {
+                          backgroundColor: '#dc2626',
+                          color: 'white',
+                        },
+                        py: 1,
+                        px: 2,
+                        borderRadius: 1,
+                        textTransform: 'none',
                         fontWeight: 500,
-                        '&:hover': { color: '#E7000B' },
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0.5,
                       }}>
                       {page.name}
-                      {anchorElProductos ? <ExpandLess /> : <ExpandMore />}
+                      {anchorElProductosDesktop ? (
+                        <ExpandLess />
+                      ) : (
+                        <ExpandMore />
+                      )}
                     </Button>
+
+                    {/* Menú de productos */}
                     <Menu
-                      anchorEl={anchorElProductos}
-                      open={Boolean(anchorElProductos)}
-                      onClose={handleCloseProductosMenu}
+                      anchorEl={anchorElProductosDesktop}
+                      open={Boolean(anchorElProductosDesktop)}
+                      onClose={handleCloseProductosMenuDesktop}
                       anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                       transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                      sx={{ mt: '20px' }}>
+                      PaperProps={{
+                        sx: {
+                          mt: '19px',
+                          backgroundColor: '#1F2937',
+                          color: '#fff',
+                          minWidth: '160px',
+                          pl: 2,
+                          pr: 2,
+                        },
+                      }}>
                       {categorias.map((categoria) => (
                         <MenuItem
                           key={categoria.id}
-                          onClick={() => handleCategoriaClick(categoria.id)}
+                          onClick={() => {
+                            handleCategoriaClick(categoria.id);
+                            handleCloseProductosMenuDesktop();
+                          }}
                           sx={{
+                            fontSize: '0.9rem',
+                            color: '#fff',
+                            borderRadius: '8px',
+                            pl: 2,
+                            pr: 2,
+                            mx: 0.5,
                             '&:hover': {
-                              backgroundColor: '#F6FAFD',
-                              color: '#2B7FFF',
+                              backgroundColor: '#dc2626',
+                              color: '#fff',
                             },
                           }}>
                           {categoria.nombre}
@@ -191,7 +245,24 @@ const Header = () => {
                     key={page.name}
                     component={NavLink}
                     to={page.path}
-                    className={linkClass}>
+                    className={({ isActive }) => (isActive ? 'active' : '')}
+                    sx={{
+                      color: 'white',
+                      backgroundColor: 'transparent',
+                      '&.active': {
+                        backgroundColor: '#dc2626',
+                        color: 'white',
+                      },
+                      '&:hover': {
+                        backgroundColor: '#dc2626',
+                        color: 'white',
+                      },
+                      py: 1,
+                      px: 2,
+                      borderRadius: 1,
+                      textTransform: 'none',
+                      fontWeight: 500,
+                    }}>
                     {page.name}
                   </Button>
                 )
@@ -202,7 +273,17 @@ const Header = () => {
             <IconButton
               component={Link}
               to='/carrito'
-              color='inherit'>
+              color='inherit'
+              sx={{
+                color: 'white',
+                backgroundColor: 'transparent',
+                '&:hover': {
+                  backgroundColor: '#dc2626',
+                  color: 'white',
+                },
+                borderRadius: '6px',
+                padding: '8px',
+              }}>
               <Badge
                 badgeContent={cantidadTotal}
                 color='error'>
@@ -230,8 +311,10 @@ const Header = () => {
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
               PaperProps={{
                 sx: {
-                  mt: '20px',
+                  mt: '19px',
                   width: '180px',
+                  backgroundColor: '#1F2937',
+                  color: '#fff',
                   pl: '20px',
                   pr: '20px',
                   boxSizing: 'border-box',
@@ -240,19 +323,24 @@ const Header = () => {
               {settings.map((setting) => (
                 <MenuItem
                   key={setting}
-                  onClick={() => handleUserMenuClick(setting)} // ✅ ahora abre el modal correcto
+                  onClick={() => handleUserMenuClick(setting)}
                   sx={{
-                    '&:hover': { backgroundColor: '#F6FAFD', color: '#2B7FFF' },
-                  }}>
-                  <Typography
-                    textAlign='center'
-                    sx={{
+                    color: '#fff',
+                    borderRadius: '6px',
+                    py: 0.7,
+                    '&:hover': {
+                      backgroundColor: '#dc2626',
+                      color: '#fff',
+                    },
+                    '& .MuiTypography-root': {
                       fontSize: '0.9rem',
                       fontWeight: 500,
-                      textTransform: 'uppercase',
-                    }}>
-                    {setting}
-                  </Typography>
+                      textTransform: 'none',
+                      width: '100%',
+                      textAlign: 'left',
+                    },
+                  }}>
+                  <Typography>{setting}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -274,6 +362,9 @@ const Header = () => {
               left: '0px !important',
               right: '0px',
               mt: '20px',
+              borderRadius: '0px',
+              backgroundColor: '#1F2937',
+              color: '#fff',
               pl: '20px',
               pr: '20px',
               boxSizing: 'border-box',
@@ -281,53 +372,113 @@ const Header = () => {
           }}>
           {pages.map((page) => (
             <Box key={page.name}>
-              <MenuItem
-                onClick={page.hasDropdown ? null : handleCloseNavMenu}
-                component={page.hasDropdown ? 'div' : Link}
-                to={page.hasDropdown ? null : page.path}
-                sx={{
-                  my: 1,
-                  '&:hover': {
-                    backgroundColor: '#F6FAFD',
-                    color: '#2B7FFF',
-                  },
-                }}>
-                <Typography
-                  textAlign='center'
-                  sx={{
-                    fontSize: '0.9rem',
-                    fontWeight: 500,
-                    textTransform: 'uppercase',
-                  }}>
-                  {page.name}
-                </Typography>
-                {page.hasDropdown && (
-                  <IconButton onClick={handleOpenProductosMenu}>
-                    {anchorElProductos ? <ExpandLess /> : <ExpandMore />}
-                  </IconButton>
-                )}
-              </MenuItem>
-
-              {/* Menú desplegable para móvil */}
-              {page.hasDropdown && (
-                <Menu
-                  anchorEl={anchorElProductos}
-                  open={Boolean(anchorElProductos)}
-                  onClose={handleCloseProductosMenu}>
-                  {categorias.map((categoria) => (
-                    <MenuItem
-                      key={categoria.id}
-                      onClick={() => handleCategoriaClickMobile(categoria.id)}
+              {page.hasDropdown ? (
+                <>
+                  <MenuItem
+                    onClick={handleOpenProductosMenuMobile}
+                    sx={{
+                      my: 1,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      backgroundColor: isCategoriaPage
+                        ? '#dc2626'
+                        : 'transparent',
+                      color: isCategoriaPage ? 'white' : '#fff',
+                      '&:hover': {
+                        backgroundColor: '#dc2626',
+                        color: 'white',
+                        borderRadius: '8px',
+                      },
+                    }}>
+                    <Typography
+                      textAlign='center'
                       sx={{
-                        '&:hover': {
-                          backgroundColor: '#F6FAFD',
-                          color: '#2B7FFF',
-                        },
+                        fontSize: '0.9rem',
+                        fontWeight: 500,
+                        textTransform: 'none',
+                        color: 'inherit',
                       }}>
-                      {categoria.nombre}
-                    </MenuItem>
-                  ))}
-                </Menu>
+                      {page.name}
+                    </Typography>
+                    <IconButton
+                      size='small'
+                      sx={{ color: 'inherit' }}>
+                      {anchorElProductosMobile ? (
+                        <ExpandLess />
+                      ) : (
+                        <ExpandMore />
+                      )}
+                    </IconButton>
+                  </MenuItem>
+
+                  {/* Menú desplegable de productos en móvil */}
+                  <Menu
+                    anchorEl={anchorElProductosMobile}
+                    open={Boolean(anchorElProductosMobile)}
+                    onClose={handleCloseProductosMenuMobile}
+                    PaperProps={{
+                      sx: {
+                        backgroundColor: '#1F2937',
+                        color: '#fff',
+                        pl: 3,
+                        pr: 3,
+                        mt: 1,
+                        ml: 2,
+                      },
+                    }}>
+                    {categorias.map((categoria) => (
+                      <MenuItem
+                        key={categoria.id}
+                        onClick={() => {
+                          handleCategoriaClickMobile(categoria.id);
+                          handleCloseProductosMenuMobile();
+                        }}
+                        sx={{
+                          fontSize: '0.9rem',
+                          color: '#fff',
+                          textTransform: 'none',
+                          borderRadius: '8px',
+                          pl: 2,
+                          pr: 2,
+                          mx: 0.5,
+                          '&:hover': {
+                            backgroundColor: '#dc2626',
+                            color: '#fff',
+                          },
+                        }}>
+                        {categoria.nombre}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </>
+              ) : (
+                <MenuItem
+                  component={NavLink}
+                  to={page.path}
+                  onClick={handleCloseNavMenu}
+                  className={({ isActive }) => (isActive ? 'active' : '')}
+                  sx={{
+                    my: 1,
+                    color: '#fff',
+                    '&.active': {
+                      backgroundColor: '#dc2626',
+                      color: 'white',
+                      borderRadius: '8px',
+                    },
+                    '&:hover': {
+                      backgroundColor: '#dc2626',
+                      color: 'white',
+                      borderRadius: '8px',
+                    },
+                    '& .MuiTypography-root': {
+                      fontSize: '0.9rem',
+                      fontWeight: 500,
+                      textTransform: 'none',
+                    },
+                  }}>
+                  <Typography textAlign='center'>{page.name}</Typography>
+                </MenuItem>
               )}
             </Box>
           ))}

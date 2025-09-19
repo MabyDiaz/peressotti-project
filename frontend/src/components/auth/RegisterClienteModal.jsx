@@ -54,7 +54,7 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
           onSubmit={handleSubmit}
           className='flex flex-col gap-4'>
           {/* Nombre */}
-          <div className='flex items-center border border-gray-600 rounded px-3 py-2 gap-2'>
+          <div className='row flex items-center px-3 py-2 gap-2 rounded-md bg-gray-100 shadow-sm border border-gray-300 focus:outline-none text-sm'>
             <FaUser className='text-gray-600' />
             <input
               type='text'
@@ -63,12 +63,12 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
               value={formData.nombre}
               onChange={handleChange}
               required
-              className='flex-1 outline-none  placeholder-gray-400'
+              className='flex-1 text-gray-700 border-none focus:outline-none focus:ring-0 text-sm placeholder-gray-400 '
             />
           </div>
 
           {/* Apellido */}
-          <div className='flex items-center border border-gray-600 rounded px-3 py-2 gap-2'>
+          <div className='row flex items-center px-3 py-2 gap-2 rounded-md bg-gray-100 shadow-sm border border-gray-300 focus:outline-none text-sm'>
             <FaUser className='text-gray-600' />
             <input
               type='text'
@@ -77,12 +77,12 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
               value={formData.apellido}
               onChange={handleChange}
               required
-              className='flex-1 outline-none'
+              className='flex-1 text-gray-700 border-none focus:outline-none focus:ring-0 text-sm placeholder-gray-400'
             />
           </div>
 
           {/* Teléfono */}
-          <div className='flex items-center border border-gray-600 rounded px-3 py-2 gap-2'>
+          <div className='row flex items-center px-3 py-2 gap-2 rounded-md bg-gray-100 shadow-sm border border-gray-300 focus:outline-none text-sm'>
             <FaPhone className='text-gray-600' />
             <input
               type='text'
@@ -91,12 +91,12 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
               value={formData.telefono}
               onChange={handleChange}
               required
-              className='flex-1 outline-none'
+              className='flex-1 text-gray-700 border-none focus:outline-none focus:ring-0 text-sm placeholder-gray-400'
             />
           </div>
 
           {/* Email */}
-          <div className='flex items-center border border-gray-600 rounded px-3 py-2 gap-2'>
+          <div className='row flex items-center px-3 py-2 gap-2 rounded-md bg-gray-100 shadow-sm border border-gray-300 focus:outline-none text-sm'>
             <FaEnvelope className='text-gray-600' />
             <input
               type='email'
@@ -105,12 +105,12 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
               value={formData.email}
               onChange={handleChange}
               required
-              className='flex-1 outline-none'
+              className='flex-1 text-gray-700 border-none focus:outline-none focus:ring-0 text-sm placeholder-gray-400'
             />
           </div>
 
           {/* Contraseña */}
-          <div className='flex items-center border border-gray-600 rounded px-3 py-2 gap-2'>
+          <div className='row flex items-center px-3 py-2 gap-2 rounded-md bg-gray-100 shadow-sm border border-gray-300 focus:outline-none text-sm'>
             <FaLock className='text-gray-600' />
             <input
               type='password'
@@ -119,7 +119,7 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
               value={formData.contrasena}
               onChange={handleChange}
               required
-              className='flex-1 outline-none'
+              className='flex-1 text-gray-700 border-none focus:outline-none focus:ring-0 text-sm placeholder-gray-400'
             />
           </div>
 
@@ -139,7 +139,7 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
           </div>
 
           {/* Link para login */}
-          <div className='signup-link text-center text-sm mt-2'>
+          <div className='signup-link text-center text-gray-800 text-sm mt-2'>
             ¿Ya tenés cuenta?{' '}
             <a
               href='#'

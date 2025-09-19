@@ -46,7 +46,7 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
           onSubmit={handleSubmit}
           className='flex flex-col gap-4'>
           {/* Email */}
-          <div className='row flex items-center border border-gray-800 rounded px-3 py-2 gap-2'>
+          <div className='row flex items-center px-3 py-2 gap-2 rounded-md bg-gray-100 shadow-sm border border-gray-300 focus:outline-none text-sm'>
             <FaUser className='text-gray-600' />
             <input
               type='email'
@@ -55,11 +55,11 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
               value={formData.email}
               onChange={handleChange}
               required
-              className='flex-1 outline-none  placeholder-gray-400'
+              className='flex-1 text-gray-700 border-none focus:outline-none focus:ring-0 text-sm placeholder-gray-400'
             />
           </div>
           {/* Contraseña */}
-          <div className='row flex items-center border border-gray-800 rounded px-3 py-2 gap-2'>
+          <div className='row flex items-center px-3 py-2 gap-2 rounded-md bg-gray-100 shadow-sm border border-gray-300 focus:outline-none text-sm'>
             <FaLock className='text-gray-600' />
             <input
               type='password'
@@ -68,7 +68,7 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
               value={formData.contrasena}
               onChange={handleChange}
               required
-              className='flex-1   placeholder-gray-400'
+              className='flex-1 text-gray-700 border-none focus:outline-none focus:ring-0 text-sm placeholder-gray-400'
             />
           </div>
 

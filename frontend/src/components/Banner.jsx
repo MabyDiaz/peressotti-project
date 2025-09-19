@@ -52,7 +52,7 @@ const Banner = () => {
 
   return (
     <>
-      <div className='bg-[#d0d3c5] w-full max-h-[500px] overflow-hidden pb-8'>
+      <div className='bg-[#F9FAFB] w-full max-h-[500px] overflow-hidden pb-8'>
         <Slider {...settings}>
           {banners.map((banner, index) => (
             <div

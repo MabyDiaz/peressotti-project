@@ -3,7 +3,7 @@ import BloqueHero from '../components/BloqueHero.jsx';
 import Filtros from '../components/Filtros.jsx';
 import ProductosDestacados from '../components/ProductosDestacados.jsx';
 import ListadoCategorias from '../components/ListadoCategorias.jsx';
-import EntradaCupon from '../components/EntradaCupon.jsx';
+//import EntradaCupon from '../components/EntradaCupon.jsx';
 import { Typography } from '@mui/material';
 
 const Home = () => {
@@ -12,7 +12,7 @@ const Home = () => {
       <Banner />
       <Filtros />
       <ListadoCategorias />
-      <EntradaCupon />
+      {/* <EntradaCupon /> */}
       <Typography
         component='h2'
         align='center'
