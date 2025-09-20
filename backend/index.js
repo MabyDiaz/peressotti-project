@@ -23,8 +23,17 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        'img-src': ["'self'", 'data:', 'http://localhost:3000'],
+        'img-src': [
+          "'self'",
+          'data:',
+          'http://localhost:3000',
+          'http://localhost:5173',
+        ],
       },
+    },
+    crossOriginResourcePolicy: {
+      policy: 'cross-origin',
+      // policy: "same-site", //  Solo permite mismo sitio (localhost)
     },
   })
 );
@@ -64,7 +73,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use((req, res, next) => {
-  res.removeHeader("Cross-Origin-Resource-Policy");
+  res.removeHeader('Cross-Origin-Resource-Policy');
   next();
 });
 // Middleware para servir imágenes

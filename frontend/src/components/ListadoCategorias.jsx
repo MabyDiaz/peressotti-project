@@ -79,7 +79,7 @@ function ListadoCategorias() {
           fontSize: {
             xs: '1.4rem',
             sm: '1.7rem',
-            md: '2rem',
+            md: '1.8rem',
           },
         }}>
         Catálogo de Productos

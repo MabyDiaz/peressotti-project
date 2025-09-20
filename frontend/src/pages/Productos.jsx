@@ -9,15 +9,16 @@ const Productos = () => {
         align='center'
         sx={{
           fontWeight: 'bold',
-          my: 4,
+          mt: 4,
+
           textTransform: 'uppercase',
           fontSize: {
             xs: '1.3rem',
-            sm: '1.8rem',
-            md: '2rem',
+            sm: '1.7rem',
+            md: '1.8rem',
           },
         }}>
-        Todos Nuestros Productos
+        Nuestros Productos
       </Typography>
       <ListaProductos />
     </Box>

@@ -81,7 +81,7 @@ const Banner = () => {
                 </p>
                 <button
                   onClick={handleVerProductos}
-                  className='bg-white text-gray-700 px-5 py-2 rounded text-sm uppercase font-bold hover:text-blue-500 transition-transform duration-200 hover:scale-103'>
+                  className='bg-[#F9FAFB] hover:bg-red-600 text-gray-800 hover:text-white px-5 py-2 rounded text-sm font-bold transition-all duration-200 hover:scale-105'>
                   {banner.boton}
                 </button>
               </div>

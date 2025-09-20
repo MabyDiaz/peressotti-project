@@ -1,54 +1,13 @@
 import { Link } from 'react-router-dom';
 import {
-  Card,
-  CardMedia,
-  CardContent,
-  CardActions,
-  Typography,
-  Button,
-  Box,
-  Chip,
-} from '@mui/material';
-import Rating from '@mui/material/Rating';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+  FaEye,
+  FaStar,
+  FaStarHalfStroke,
+  FaRegStar,
+  FaTag,
+} from 'react-icons/fa6';
 import { useCupon } from '../hooks/useCupon.js';
 import { getImageUrl } from '../utils/getImageUrl.js';
-
-const PrecioOriginal = ({ precio }) => (
-  <Typography
-    variant='body1'
-    sx={{
-      fontSize: '0.8rem',
-      textDecoration: 'line-through',
-      color: 'text.secondary',
-    }}>
-    ${precio.toFixed(2)}
-  </Typography>
-);
-
-const PrecioConDescuento = ({ precio, descuento, esCupon }) => (
-  <Typography
-    variant='body1'
-    fontWeight='bold'
-    sx={{ color: esCupon ? '#2b7fff' : '#ff5722', fontSize: '1.1rem' }}>
-    ${precio}
-    <Typography
-      component='span'
-      sx={{ color: 'green', fontSize: '0.8rem', ml: 1 }}>
-      ({descuento}% OFF{esCupon ? ' cupón' : ''})
-    </Typography>
-  </Typography>
-);
-
-const PrecioNormal = ({ precio }) => (
-  <Typography
-    variant='body1'
-    fontWeight='bold'
-    sx={{ mt: 1, fontSize: '0.95rem' }}>
-    ${precio.toFixed(2)}
-  </Typography>
-);
 
 const ProductCard = ({ producto, rating, onRatingChange }) => {
   const { cupon } = useCupon();
@@ -57,170 +16,133 @@ const ProductCard = ({ producto, rating, onRatingChange }) => {
     return (precio * (1 - descuento / 100)).toFixed(2);
   };
 
+  const renderStars = (value) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <span
+          key={i}
+          onClick={() => onRatingChange(producto.id, i)}
+          className='cursor-pointer'>
+          {i <= value ? (
+            <FaStar className='text-yellow-500' />
+          ) : i - 0.5 === value ? (
+            <FaStarHalfStroke className='text-yellow-500' />
+          ) : (
+            <FaRegStar className='text-yellow-500' />
+          )}
+        </span>
+      );
+    }
+    return stars;
+  };
+
   const mostrarPrecio = () => {
     if (cupon && cupon.porcentajeDescuento > 0) {
       return (
-        <Box sx={{ mt: 1 }}>
-          <PrecioOriginal precio={producto.precio} />
-          <PrecioConDescuento
-            precio={calcularPrecioConDescuento(
+        <div className='mt-1 space-y-0.5'>
+          <p className='text-xs text-gray-500 line-through'>
+            ${producto.precio.toFixed(2)}
+          </p>
+          <p className='text-sm font-bold text-blue-600'>
+            $
+            {calcularPrecioConDescuento(
               producto.precio,
               cupon.porcentajeDescuento
             )}
-            descuento={cupon.porcentajeDescuento}
-            esCupon={true}
-          />
-        </Box>
+            <span className='text-green-600 text-xs ml-1'>
+              ({cupon.porcentajeDescuento}% OFF cupón)
+            </span>
+          </p>
+        </div>
       );
     }
 
     if (producto.descuento > 0) {
       return (
-        <Box sx={{ mt: 1 }}>
-          <PrecioOriginal precio={producto.precio} />
-          <PrecioConDescuento
-            precio={calcularPrecioConDescuento(
-              producto.precio,
-              producto.descuento
-            )}
-            descuento={producto.descuento}
-            esCupon={false}
-          />
-        </Box>
+        <div className='mt-1 space-y-0.5'>
+          <p className='text-xs text-gray-500 line-through'>
+            ${producto.precio.toFixed(2)}
+          </p>
+          <p className='text-sm font-bold text-red-600'>
+            ${calcularPrecioConDescuento(producto.precio, producto.descuento)}
+            <span className='text-green-600 text-xs ml-1'>
+              ({producto.descuento}% OFF)
+            </span>
+          </p>
+        </div>
       );
     }
 
-    return <PrecioNormal precio={producto.precio} />;
+    // En tu componente, haz un console.log
+    console.log(
+      'URL de la imagen:',
+      `http://localhost:3000/uploads/${producto.imagen}`
+    );
+
+    return (
+      <p className='mt-1 text-sm font-bold text-gray-800'>
+        ${producto.precio.toFixed(2)}
+      </p>
+    );
   };
 
   return (
-    <Card
-      sx={{
-        maxWidth: 260,
-        mx: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-        '&:hover': {
-          transform: 'scale(1.03)',
-          boxShadow: 6,
-        },
-        position: 'relative',
-      }}>
+    <div className='bg-white rounded shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:scale-105 max-w-[220px] mx-auto'>
       {/* Chip Cupón */}
       {cupon && cupon.porcentajeDescuento > 0 && (
-        <Chip
-          icon={<LocalOfferIcon fontSize='small' />}
-          label={`Cupón ${cupon.porcentajeDescuento}% OFF`}
-          size='small'
-          color='primary'
-          sx={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            zIndex: 1,
-            fontWeight: 'bold',
-            backgroundColor: '#2b7fff',
-            color: 'white',
-          }}
-        />
+        <div className='absolute top-2 right-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded flex items-center gap-1 z-10'>
+          <FaTag size={10} />
+          {cupon.porcentajeDescuento}% OFF
+        </div>
       )}
 
       {/* Chip Oferta */}
       {(!cupon || cupon.porcentajeDescuento === 0) &&
         producto.descuento > 0 && (
-          <Chip
-            icon={<LocalOfferIcon fontSize='small' />}
-            label='Oferta!'
-            size='small'
-            color='error'
-            sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              zIndex: 1,
-              fontWeight: 'bold',
-            }}
-          />
+          <div className='absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded flex items-center gap-1 z-10 shadow-md'>
+            <FaTag size={10} />
+            Oferta!
+          </div>
         )}
 
       <Link to={`/productos/${producto.id}`}>
-        <CardMedia
-          component='img'
-          image={getImageUrl(producto.imagen)}
+        <img
+          src={getImageUrl(producto.imagen)}
           alt={producto.nombre}
-          sx={{
-            height: 240,
-            objectFit: 'cover',
-          }}
+          className='w-full h-32 object-cover'
         />
       </Link>
 
-      <CardContent
-        sx={{
-          flexGrow: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          py: 1.5,
-          px: 2,
-        }}>
-        <Box>
-          <Typography
-            variant='h6'
-            component={Link}
+      <div className='p-3 flex flex-col justify-between flex-grow'>
+        <div>
+          <Link
             to={`/productos/${producto.id}`}
-            sx={{
-              fontSize: '1rem',
-              mb: 0.5,
-              textDecoration: 'none',
-              color: 'inherit',
-            }}>
+            className='font-bold text-sm text-gray-800 hover:text-red-600 line-clamp-2'>
             {producto.nombre}
-          </Typography>
-          <Typography
-            variant='body2'
-            color='text.secondary'
-            sx={{ fontSize: '0.8rem' }}>
+          </Link>
+          <p className='text-xs text-gray-600 mt-1 line-clamp-2'>
             {producto.descripcion}
-          </Typography>
+          </p>
 
-          <Rating
-            name={`rating-${producto.id}`}
-            value={rating ?? producto.estrellas ?? 0}
-            precision={0.5}
-            onChange={(event, newValue) => {
-              onRatingChange(producto.id, newValue);
-            }}
-            size='small'
-            sx={{ mt: 1 }}
-          />
-        </Box>
+          <div className='flex mt-2'>
+            {renderStars(rating ?? producto.estrellas ?? 0)}
+          </div>
+        </div>
 
         {mostrarPrecio()}
-      </CardContent>
 
-      <CardActions sx={{ px: 2, pb: 2 }}>
-        <Button
-          component={Link}
+        <Link
           to={`/producto/${producto.id}`}
-          variant='contained'
-          fullWidth
-          size='small'
-          startIcon={<ShoppingCartIcon />}
-          color='secondary'
-          sx={{
-            backgroundColor: '#2b7fff',
-            '&:hover': {
-              backgroundColor: '#ffffff',
-              border: '1px solid #2b7fff',
-              color: '#2b7fff',
-            },
-          }}>
-          Ver Producto
-        </Button>
-      </CardActions>
-    </Card>
+          className='mt-3 w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-3 rounded flex items-center justify-center transition-colors duration-200'>
+          <FaEye
+            size={14}
+            className='mr-1'
+          />
+          Ver Detalle
+        </Link>
+      </div>
+    </div>
   );
 };
 

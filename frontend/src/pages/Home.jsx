@@ -17,14 +17,14 @@ const Home = () => {
         component='h2'
         align='center'
         sx={{
+          color: '#1F2937',
           fontWeight: 'bold',
-          // pt: 6,
-          mb: 1,
+          pt: 4,
           textTransform: 'uppercase',
           fontSize: {
             xs: '1.4rem',
             sm: '1.7rem',
-            md: '2rem',
+            md: '1.8rem',
           },
         }}>
         Productos Destacados
