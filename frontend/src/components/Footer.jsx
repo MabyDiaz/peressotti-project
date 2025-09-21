@@ -24,7 +24,6 @@ function Footer() {
           justifyContent='center'
           className='py-6 '>
           <Grid
-            item
             xs={12}
             sm={6}
             md={4}>
@@ -47,7 +46,6 @@ function Footer() {
           </Grid>
 
           <Grid
-            item
             xs={12}
             sm={6}
             md={3}>
@@ -77,7 +75,6 @@ function Footer() {
           </Grid>
 
           <Grid
-            item
             xs={12}
             sm={6}
             md={3}>
