@@ -80,6 +80,7 @@ export const getProducto = async (req, res) => {
 
     const producto = await Producto.findByPk(id, {
       include: [{ model: Categoria, attributes: ['id', 'nombre'] }],
+      attributes: { include: ['idCategoria'] },
     });
 
     if (!producto) {
@@ -265,7 +266,7 @@ export const updateProducto = async (req, res) => {
 
     const imagen = req.file
       ? `/uploads/${req.file.filename}`
-      : imagenBody || producto.imagen; 
+      : imagenBody || producto.imagen;
     await producto.update({
       nombre,
       descripcion,

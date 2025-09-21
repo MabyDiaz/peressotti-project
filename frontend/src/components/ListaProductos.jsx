@@ -5,41 +5,6 @@ import api from '../api/axios';
 import { Typography, Box } from '@mui/material';
 import ProductCard from './ProductCard.jsx';
 
-// Componentes reutilizables para precios
-const PrecioOriginal = ({ precio }) => (
-  <Typography
-    variant='body1'
-    sx={{
-      fontSize: '0.8rem',
-      textDecoration: 'line-through',
-      color: 'text.secondary',
-    }}>
-    ${precio.toFixed(2)}
-  </Typography>
-);
-
-const PrecioConDescuento = ({ precio, descuento, esCupon }) => (
-  <Typography
-    variant='body1'
-    fontWeight='bold'
-    sx={{ color: esCupon ? '#2b7fff' : '#ff5722', fontSize: '1.1rem' }}>
-    ${precio}
-    <Typography
-      component='span'
-      sx={{ color: 'green', fontSize: '0.8rem', ml: 1 }}>
-      ({descuento}% OFF{esCupon ? ' cupón' : ''})
-    </Typography>
-  </Typography>
-);
-
-const PrecioNormal = ({ precio }) => (
-  <Typography
-    variant='body1'
-    fontWeight='bold'
-    sx={{ mt: 1, fontSize: '0.95rem' }}>
-    ${precio.toFixed(2)}
-  </Typography>
-);
 
 const ListaProductos = ({ idCategoria = null }) => {
   const [productos, setProductos] = useState([]);
