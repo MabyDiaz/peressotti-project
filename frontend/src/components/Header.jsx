@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, NavLink, useLocation } from 'react-router-dom';
 import { useCarrito } from '../hooks/useCarrito.js';
-
+import Carrito from '../pages/Carrito';
 import api from '../api/axios';
 import {
   AppBar,
@@ -51,6 +51,8 @@ const Header = () => {
   const location = useLocation();
 
   console.log(carrito);
+
+  const CarritoComponent = Carrito();
 
   // Detectar si estamos en una ruta de categoría
   const isCategoriaPage = location.pathname.startsWith('/categoria/');
@@ -121,6 +123,33 @@ const Header = () => {
     }
     handleCloseUserMenu();
   };
+
+  <IconButton
+    onClick={CarritoComponent.toggleDrawer(true)} // Abre el drawer
+    color='inherit'
+    sx={{
+      color: 'white',
+      backgroundColor: 'transparent',
+      '&:hover': {
+        backgroundColor: '#dc2626',
+        color: 'white',
+      },
+      borderRadius: '6px',
+      padding: '8px',
+    }}>
+    <Badge
+      badgeContent={cantidadTotal}
+      color='error'>
+      <ShoppingCartIcon sx={{ color: 'white' }} />
+    </Badge>
+  </IconButton>;
+
+  {
+    /* Renderiza el Drawer del carrito */
+  }
+  {
+    CarritoComponent.CarritoDrawer;
+  }
 
   return (
     <AppBar
@@ -271,9 +300,7 @@ const Header = () => {
 
             {/* Iconos de carrito y usuario */}
             <IconButton
-              component={Link}
-              to='/carrito'
-              color='inherit'
+              onClick={CarritoComponent.toggleDrawer(true)}
               sx={{
                 color: 'white',
                 backgroundColor: 'transparent',
@@ -495,6 +522,8 @@ const Header = () => {
           onClose={() => setShowRegister(false)}
           onSwitchToLogin={() => setShowLogin(true)}
         />
+
+        {CarritoComponent.CarritoDrawer}
       </Container>
     </AppBar>
   );

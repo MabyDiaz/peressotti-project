@@ -80,7 +80,6 @@ export const getProducto = async (req, res) => {
 
     const producto = await Producto.findByPk(id, {
       include: [{ model: Categoria, attributes: ['id', 'nombre'] }],
-      attributes: { include: ['idCategoria'] },
     });
 
     if (!producto) {

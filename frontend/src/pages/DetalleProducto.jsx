@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCupon } from '../hooks/useCupon.js';
 import { useCarrito } from '../hooks/useCarrito.js';
 import api from '../api/axios';
+import { Typography, Button } from '@mui/material';
 import { FaArrowLeft, FaMinus, FaPlus, FaCartShopping } from 'react-icons/fa6';
 import ProductCard from '../components/ProductCard.jsx';
 import FormPersonalizacion from '../components/FormPersonalizacion.jsx';
@@ -138,23 +139,73 @@ const DetalleProducto = () => {
             {error || 'Producto no encontrado'}
           </span>
         </div>
-        <button
+        <Button
+          variant='contained'
           onClick={() => navigate(-1)}
-          className='mt-4 bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded transition-colors duration-200'>
+          sx={{
+            backgroundColor: '#6b7280',
+            color: 'white',
+            px: 4,
+            py: 1.5,
+            fontWeight: 'bold',
+            textTransform: 'none',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            '&:hover': {
+              backgroundColor: '#4b5563',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 6px 8px rgba(0, 0, 0, 0.15)',
+            },
+            transition: 'all 0.3s ease',
+          }}
+          startIcon={<FaArrowLeft />}>
           Volver
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
     <div className='container mx-auto px-4 py-8'>
-      <button
+      <Button
+        variant='contained'
         onClick={() => navigate(-1)}
-        className='mb-6 flex items-center text-gray-600 hover:text-red-600 transition-colors duration-200'>
-        <FaArrowLeft className='mr-2' />
+        sx={{
+          backgroundColor: '#6b7280',
+          color: 'white',
+          px: 4,
+          py: 1.5,
+          fontWeight: 'bold',
+          textTransform: 'none',
+          borderRadius: '8px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          '&:hover': {
+            backgroundColor: '#4b5563',
+            transform: 'translateY(-2px)',
+            boxShadow: '0 6px 8px rgba(0, 0, 0, 0.15)',
+          },
+          transition: 'all 0.3s ease',
+        }}
+        startIcon={<FaArrowLeft />}>
         Volver
-      </button>
+      </Button>
+
+      <Typography
+        component='h1'
+        align='center'
+        sx={{
+          marginBottom: '6px',
+          fontWeight: 'bold',
+          textTransform: 'uppercase',
+          fontSize: {
+            xs: '1.3rem',
+            sm: '1.7rem',
+            md: '1.8rem',
+          },
+        }}>
+        Detalle Producto
+      </Typography>
+
       <div className='max-w-5xl mx-auto px-4 py-8'>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
           {/* Imagen */}

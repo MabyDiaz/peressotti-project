@@ -33,10 +33,10 @@ function App() {
 
   return (
     <>
-      {!isAdminRoute && <Header />}
-      <CssBaseline />
-
       <CuponProvider>
+        {!isAdminRoute && <Header />}
+        <CssBaseline />
+
         <Routes>
           <Route
             path='/'
@@ -121,13 +121,13 @@ function App() {
             </Route>
           </Route>
         </Routes>
-      </CuponProvider>
 
-      <ToastContainer
-        position='bottom-left'
-        autoClose={3000}
-      />
-      {!isAdminRoute && <Footer />}
+        <ToastContainer
+          position='bottom-left'
+          autoClose={3000}
+        />
+        {!isAdminRoute && <Footer />}
+      </CuponProvider>
     </>
   );
 }

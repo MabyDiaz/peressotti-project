@@ -2,41 +2,73 @@ import {
   Box,
   Typography,
   Button,
-  Grid,
   Divider,
   IconButton,
   TextField,
-  Paper,
-  Snackbar,
   Alert,
+  Drawer,
+  List,
+  ListItem,
+  Snackbar,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import {
+  Delete as DeleteIcon,
+  Add as AddIcon,
+  Remove as RemoveIcon,
+  ShoppingCart as ShoppingCartIcon,
+  Close as CloseIcon,
+} from '@mui/icons-material';
 import { useCarrito } from '../hooks/useCarrito';
 import { useCupon } from '../hooks/useCupon';
 import { useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 import ModalDetallePersonalizacion from '../components/ModalDetallePersonalizacion';
 
 const Carrito = () => {
-  const {
-    carrito,
-    eliminarProducto,
-    incrementarCantidad,
-    decrementarCantidad,
-    totalCarrito,
-    cantidadTotal,
-    vaciarCarrito,
-  } = useCarrito();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+    setDrawerOpen(open);
+  };
+
+  return {
+    drawerOpen,
+    toggleDrawer,
+    CarritoDrawer: (
+      <CarritoDrawer
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+      />
+    ),
+  };
+};
+
+// Componente interno: el Drawer que se desliza
+const CarritoDrawer = ({ open, onClose }) => {
+  const navigate = useNavigate();
+  const { carrito, cantidadTotal, totalCarrito, vaciarCarrito } = useCarrito();
+  const { eliminarProducto, incrementarCantidad, decrementarCantidad } =
+    useCarrito();
   const { cupon, aplicarCupon } = useCupon();
+
   const [codigo, setCodigo] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [modalData, setModalData] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
+
+  const obtenerDescuento = () =>
+    cupon?.porcentajeDescuento > 0
+      ? (totalCarrito * cupon.porcentajeDescuento) / 100
+      : 0;
+
+  const totalConDescuento = totalCarrito - obtenerDescuento();
 
   const handleAplicarCupon = () => {
     if (!codigo.trim()) return;
@@ -49,206 +81,419 @@ const Carrito = () => {
     setTimeout(() => setMensaje(''), 3000);
   };
 
-  const obtenerDescuento = () =>
-    cupon?.porcentajeDescuento > 0
-      ? (totalCarrito * cupon.porcentajeDescuento) / 100
-      : 0;
-  const totalConDescuento = totalCarrito - obtenerDescuento();
-
   const handleFinalizarCompra = () => {
     setToastOpen(true);
     vaciarCarrito();
-    // Aquí podrías agregar lógica para enviar pedido al backend
+    onClose(); // Cierra el carrito
+    navigate('/'); // Redirige al inicio
   };
 
   if (!carrito || carrito.length === 0) {
     return (
-      <Box
-        textAlign='center'
-        mt={4}>
-        <ShoppingCartIcon sx={{ fontSize: 64, color: '#ccc' }} />
-        <Typography
-          variant='h5'
-          color='text.secondary'>
-          Tu carrito está vacío
-        </Typography>
-      </Box>
+      <Drawer
+        anchor='right'
+        open={open}
+        onClose={onClose}
+        PaperProps={{
+          sx: {
+            width: { xs: '90%', sm: '400px' },
+            p: 3,
+            backgroundColor: '#f9fafb',
+          },
+        }}>
+        <Box>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 3,
+              backgroundColor: '#DC2626',
+              borderRadius: '8px',
+            }}>
+            <Typography
+              variant='h6'
+              fontWeight='bold'
+              color='#ffff'
+              padding='6px 6px 6px 10px'>
+              Tu Carrito
+            </Typography>
+            <IconButton
+              onClick={onClose}
+              sx={{ color: '#fff' }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '70vh',
+              textAlign: 'center',
+            }}>
+            <ShoppingCartIcon sx={{ fontSize: 64, color: '#9ca3af', mb: 2 }} />
+            <Typography
+              variant='h6'
+              color='text.secondary'
+              fontWeight='bold'>
+              Tu carrito está vacío
+            </Typography>
+            <Button
+              variant='contained'
+              sx={{
+                mt: 3,
+                backgroundColor: '#DC2626',
+                '&:hover': { backgroundColor: '#fee2e2' },
+              }}
+              onClick={onClose}>
+              Seguir comprando
+            </Button>
+          </Box>
+        </Box>
+      </Drawer>
     );
   }
 
   return (
     <>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6, mb: 4 }}>
-        <Typography variant='h4'>Carrito de compras</Typography>
-      </Box>
+      <Drawer
+        anchor='right'
+        open={open}
+        onClose={onClose}
+        PaperProps={{
+          sx: {
+            width: { xs: '100%', sm: '750px' },
+            p: 2,
+            backgroundColor: '#ffffff',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            height: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+          },
+        }}>
+        {/* Header */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 1,
+            backgroundColor: '#DC2626',
+            borderRadius: '8px',
+          }}>
+          <Typography
+            variant='h6'
+            fontWeight='bold'
+            color='#fff'
+            padding='6px 6px 6px 10px'>
+            Tu Carrito ({cantidadTotal})
+          </Typography>
+          <IconButton
+            onClick={onClose}
+            sx={{
+              color: '#fff',
+              fontSize: '10px',
+            }}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
 
-      <Grid
-        container
-        spacing={8}
-        justifyContent='center'
-        sx={{ p: 4, width: '95%', maxWidth: 'none', mx: 'auto' }}>
-        {/* Lista de productos */}
-        <Grid
-          item
-          xs={12}
-          md={8}>
-          {carrito.map((item) => (
-            <Paper
-              key={item.id}
-              sx={{ p: 2, mb: 2, display: 'flex', gap: 2 }}>
-              {/* Imagen */}
-              {item.imagen && (
-                <Box
-                  component='img'
-                  src={item.imagen}
-                  alt={item.nombre}
+        <Divider sx={{ mb: 3 }} />
+
+        {/* Contenido en dos columnas */}
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          {/* Columna izquierda: productos */}
+          <Box sx={{ flex: 2, maxHeight: '100vh', overflowY: 'auto' }}>
+            <List>
+              {carrito.map((item) => (
+                <ListItem
+                  key={item.id}
                   sx={{
-                    width: 80,
-                    height: 80,
-                    objectFit: 'cover',
-                    borderRadius: 1,
-                  }}
-                />
-              )}
-
-              <Box sx={{ flexGrow: 1 }}>
-                <Typography variant='h6'>{item.nombre}</Typography>
-                <Typography variant='body2'>
-                  Precio unitario: ${item.precio.toFixed(2)}
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                  <IconButton
-                    onClick={() => decrementarCantidad(item.id)}
-                    size='small'>
-                    <RemoveIcon />
-                  </IconButton>
-                  <Typography sx={{ mx: 1 }}>{item.cantidad}</Typography>
-                  <IconButton
-                    onClick={() => incrementarCantidad(item.id)}
-                    size='small'>
-                    <AddIcon />
-                  </IconButton>
-                </Box>
-
-                {/* Producto personalizable */}
-                {item.customData && (
-                  <Box
-                    sx={{
-                      mt: 1,
-                      p: 1,
-                      backgroundColor: '#f0f4ff',
-                      borderRadius: 1,
-                    }}>
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    mb: 2,
+                    p: 2,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}>
+                  <Box sx={{ flexGrow: 1 }}>
                     <Typography
-                      variant='subtitle2'
+                      variant='subtitle1'
                       fontWeight='bold'
-                      color='primary'>
-                      Personalizado
+                      color='#1F2937'
+                      sx={{ mb: 1 }}>
+                      {item.nombre}
                     </Typography>
-                    <Typography variant='body2'>
-                      Archivos: {item.customData.archivos?.length || 0}
-                    </Typography>
-                    <Typography variant='body2'>
-                      Fecha:{' '}
-                      {new Date(
-                        item.customData.fechaPersonalizacion
-                      ).toLocaleDateString()}
-                    </Typography>
-                    <Button
-                      size='small'
-                      onClick={() => {
-                        setModalData(item.customData);
-                        setModalOpen(true);
-                      }}>
-                      Ver detalles
-                    </Button>
-                  </Box>
-                )}
-              </Box>
 
+                    {/* Contador */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <IconButton
+                        onClick={() => decrementarCantidad(item.id)}
+                        size='small'
+                        sx={{
+                          width: 23,
+                          height: 23,
+                          border: '1px solid #d1d5db',
+                          borderRadius: '4px',
+                          backgroundColor: '#f3f4f6',
+                          '&:hover': { backgroundColor: '#e5e7eb' },
+                        }}>
+                        <RemoveIcon fontSize='small' />
+                      </IconButton>
+                      <Typography
+                        sx={{
+                          mx: 1,
+                          fontWeight: 'bold',
+                          minWidth: '18px',
+                          textAlign: 'center',
+                        }}>
+                        {item.cantidad}
+                      </Typography>
+                      <IconButton
+                        onClick={() => incrementarCantidad(item.id)}
+                        size='small'
+                        sx={{
+                          width: 23,
+                          height: 23,
+                          border: '1px solid #d1d5db',
+                          borderRadius: '4px',
+                          backgroundColor: '#f3f4f6',
+                          '&:hover': { backgroundColor: '#e5e7eb' },
+                        }}>
+                        <AddIcon fontSize='small' />
+                      </IconButton>
+                    </Box>
+
+                    {/* Precio */}
+                    <Typography
+                      variant='body2'
+                      color='text.secondary'>
+                      Unitario: ${item.precio.toFixed(2)}
+                    </Typography>
+                    <Typography
+                      variant='body1'
+                      fontWeight='bold'
+                      color='#DC2626'>
+                      Total: ${(item.precio * item.cantidad).toFixed(2)}
+                    </Typography>
+
+                    {/* Personalización */}
+                    {item.customData && (
+                      <Box
+                        sx={{
+                          mt: 1,
+                          p: 1,
+                          backgroundColor: '#f3f4f6',
+                          borderRadius: '6px',
+                          border: '1px solid #d1d5db',
+                        }}>
+                        <Typography
+                          variant='caption'
+                          fontWeight='bold'
+                          color='#374151'
+                          sx={{ display: 'block', mb: 0.5 }}>
+                          Producto Personalizado
+                        </Typography>
+                        <Button
+                          size='small'
+                          variant='outlined'
+                          color='inherit'
+                          onClick={() => {
+                            setModalData(item.customData);
+                            setModalOpen(true);
+                          }}
+                          sx={{
+                            textTransform: 'none',
+                            mt: 0.5,
+                            borderColor: '#9ca3af',
+                            color: '#374151',
+                          }}>
+                          Ver detalles
+                        </Button>
+                      </Box>
+                    )}
+                  </Box>
+
+                  {/* Eliminar */}
+                  <IconButton
+                    edge='end'
+                    onClick={() => eliminarProducto(item.id)}
+                    sx={{
+                      color: '#ef4444',
+                      '&:hover': { backgroundColor: '#fee2e2' },
+                    }}>
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+
+          {/* Columna derecha: resumen */}
+          <Box
+            sx={{
+              flex: 2,
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              p: 2,
+              backgroundColor: '#f9fafb',
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100vh',
+            }}>
+            {/* Parte superior: contenido scrollable */}
+            <Box sx={{ overflowY: 'auto', flexGrow: 1, mb: 2 }}>
+              <Typography
+                variant='h6'
+                fontWeight='bold'
+                color='#1F2937'
+                gutterBottom>
+                Resumen de la compra
+              </Typography>
+
+              {/* Lista resumida de productos */}
+              {carrito.map((item) => (
+                <Box
+                  key={item.id}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    mb: 1,
+                  }}>
+                  <Typography variant='body2'>{item.nombre}</Typography>
+                  <Typography
+                    variant='body2'
+                    fontWeight='bold'>
+                    ${item.precio.toFixed(2)}
+                  </Typography>
+                </Box>
+              ))}
+
+              <Divider sx={{ my: 1 }} />
+
+              {/* Subtotal */}
               <Box
                 sx={{
                   display: 'flex',
-                  flexDirection: 'column',
                   justifyContent: 'space-between',
-                  alignItems: 'flex-end',
+                  mb: 1,
                 }}>
-                <Typography fontWeight='bold'>
-                  ${(item.precio * item.cantidad).toFixed(2)}
-                </Typography>
-                <IconButton
-                  onClick={() => eliminarProducto(item.id)}
-                  color='error'>
-                  <DeleteIcon />
-                </IconButton>
+                <Typography>Subtotal:</Typography>
+                <Typography>${totalCarrito.toFixed(2)}</Typography>
               </Box>
-            </Paper>
-          ))}
-        </Grid>
-
-        {/* Resumen */}
-        <Grid
-          item
-          xs={12}
-          md={4}
-          sx={{ position: 'sticky', top: 24, alignSelf: 'flex-start' }}>
-          <Paper sx={{ p: 2 }}>
-            <Typography
-              variant='h5'
-              gutterBottom>
-              Resumen
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <Typography>Productos: {cantidadTotal}</Typography>
-            <Typography>Subtotal: ${totalCarrito.toFixed(2)}</Typography>
+            </Box>
 
             {/* Cupón */}
             {cupon && cupon.porcentajeDescuento > 0 ? (
-              <Typography color='success.main'>
-                Cupón aplicado: {cupon.codigo} (-{cupon.porcentajeDescuento}%)
-              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  mb: 1,
+                  p: 1,
+                  backgroundColor: '#dcfce7',
+                  borderRadius: '4px',
+                }}>
+                <Typography color='success.main'>
+                  Descuento ({cupon.codigo}):
+                </Typography>
+                <Typography color='success.main'>
+                  -${obtenerDescuento().toFixed(2)}
+                </Typography>
+              </Box>
             ) : (
-              <>
-                <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-                  <TextField
-                    label='Código de cupón'
-                    size='small'
-                    fullWidth
-                    value={codigo}
-                    onChange={(e) => setCodigo(e.target.value)}
-                  />
-                  <Button
-                    onClick={handleAplicarCupon}
-                    variant='contained'
-                    sx={{ backgroundColor: '#2b7fff' }}>
-                    Aplicar
-                  </Button>
-                </Box>
+              <Box sx={{ mb: 2 }}>
+                <TextField
+                  size='small'
+                  placeholder='Código de cupón'
+                  value={codigo}
+                  onChange={(e) => setCodigo(e.target.value)}
+                  sx={{ flexGrow: 1, mr: 1 }}
+                />
+                <Button
+                  onClick={handleAplicarCupon}
+                  variant='contained'
+                  size='small'
+                  sx={{
+                    backgroundColor: '#DC2626',
+                    '&:hover': { backgroundColor: '#B91C1C' },
+                    whiteSpace: 'nowrap',
+                  }}>
+                  Aplicar
+                </Button>
                 {mensaje && (
                   <Alert
                     severity={mensaje.includes('éxito') ? 'success' : 'error'}
-                    sx={{ mt: 1 }}>
+                    sx={{ mt: 1, fontSize: '0.8rem' }}>
                     {mensaje}
                   </Alert>
                 )}
-              </>
+              </Box>
             )}
 
-            <Divider sx={{ my: 2 }} />
-            <Typography variant='h6'>
-              Total final: ${totalConDescuento.toFixed(2)}
-            </Typography>
-            <Button
-              variant='contained'
-              color='primary'
-              fullWidth
-              sx={{ mt: 2 }}
-              onClick={handleFinalizarCompra}>
-              Finalizar Compra
-            </Button>
-          </Paper>
-        </Grid>
-      </Grid>
+            <Divider sx={{ my: 1 }} />
+
+            {/* Total */}
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                mb: 2,
+              }}>
+              <Typography
+                variant='h6'
+                fontWeight='bold'>
+                Total:
+              </Typography>
+              <Typography
+                variant='h6'
+                fontWeight='bold'
+                color='#DC2626'>
+                ${totalConDescuento.toFixed(2)}
+              </Typography>
+            </Box>
+
+            {/* Parte inferior: botones pegados abajo */}
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 1,
+              }}>
+              <Button
+                fullWidth
+                onClick={onClose}
+                variant='outlined'
+                sx={{
+                  borderColor: '#DC2626',
+                  color: '#DC2626',
+                  fontWeight: 'bold',
+                  textTransform: 'none',
+                  '&:hover': {
+                    backgroundColor: '#fee2e2',
+                    borderColor: '#B91C1C',
+                  },
+                }}>
+                Seguir comprando
+              </Button>
+              <Button
+                fullWidth
+                variant='contained'
+                onClick={handleFinalizarCompra}
+                sx={{
+                  backgroundColor: '#DC2626',
+                  '&:hover': { backgroundColor: '#B91C1C' },
+                  fontWeight: 'bold',
+                  textTransform: 'none',
+                }}>
+                Finalizar Compra
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Drawer>
 
       {/* Modal para detalles de personalización */}
       <ModalDetallePersonalizacion
@@ -268,7 +513,6 @@ const Carrito = () => {
           severity='success'
           sx={{ width: '100%' }}>
           ¡Gracias por tu compra! Nos comunicaremos a la brevedad.
-          {/* Primero diseñamos, te mostramos, y luego imprimimos. */}
         </Alert>
       </Snackbar>
     </>

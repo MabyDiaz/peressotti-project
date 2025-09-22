@@ -11,6 +11,7 @@ import {
   Button,
 } from '@mui/material';
 import ProductCard from '../components/ProductCard.jsx';
+import { FaArrowLeft } from 'react-icons/fa6';
 
 const DetalleCategoria = () => {
   const { id } = useParams();
@@ -113,43 +114,68 @@ const DetalleCategoria = () => {
   }
 
   return (
-    <Box className='p-6'>
+    <Box className='container mx-auto px-4 py-8'>
+      <div className='flex justify-between items-center mb-6'>
+        <Button
+          variant='contained'
+          onClick={() => navigate(-1)}
+          sx={{
+            backgroundColor: '#6b7280',
+            color: 'white',
+            px: 4,
+            py: 1.5,
+            fontWeight: 'bold',
+            textTransform: 'none',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            '&:hover': {
+              backgroundColor: '#4b5563',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 6px 8px rgba(0, 0, 0, 0.15)',
+            },
+            transition: 'all 0.3s ease',
+          }}
+          startIcon={<FaArrowLeft />}>
+          Volver
+        </Button>
+
+        <Button
+          variant='contained'
+          onClick={() => navigate('/productos')}
+          sx={{
+            backgroundColor: '#DC2626',
+            color: 'white',
+            px: 4,
+            py: 1.5,
+            fontWeight: 'bold',
+            textTransform: 'none',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            '&:hover': {
+              backgroundColor: '#B91C1C',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 6px 8px rgba(0, 0, 0, 0.15)',
+            },
+            transition: 'all 0.3s ease',
+          }}>
+          Ver todos los productos
+        </Button>
+      </div>
+
+      {/* Título de la categoría */}
       <Typography
         variant='h4'
         gutterBottom
         align='center'
-        sx={{ fontWeight: 'bold', mb: 3 }}>
+        sx={{
+          fontWeight: 'bold',
+          mb: 3,
+          color: '#1F2937',
+        }}>
         {categoria.nombre}
       </Typography>
-      <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Button
-          variant='outlined'
-          onClick={() => navigate('/productos')}
-          sx={{
-            mr: 2,
-            color: '#2b7fff',
-            borderColor: '#2b7fff',
-            '&:hover': {
-              backgroundColor: '#2b7fff',
-              color: 'white',
-            },
-          }}>
-          Ver todos los productos
-        </Button>
-        <Button
-          variant='outlined'
-          onClick={() => navigate(-1)}
-          sx={{
-            color: '#666',
-            borderColor: '#666',
-            '&:hover': {
-              backgroundColor: '#666',
-              color: 'white',
-            },
-          }}>
-          Volver
-        </Button>
-      </Box>
+
+      {/* Contenido principal */}
       {productos.length === 0 ? (
         <Box
           textAlign='center'
