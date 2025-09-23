@@ -9,7 +9,10 @@ import {
   Drawer,
   List,
   ListItem,
-  Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
   Delete as DeleteIcon,
@@ -20,9 +23,9 @@ import {
 } from '@mui/icons-material';
 import { useCarrito } from '../hooks/useCarrito';
 import { useCupon } from '../hooks/useCupon';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ModalDetallePersonalizacion from '../components/ModalDetallePersonalizacion';
+import ModalDetallePersonalizacion from './ModalDetallePersonalizacion';
 
 const Carrito = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -61,7 +64,13 @@ const CarritoDrawer = ({ open, onClose }) => {
   const [mensaje, setMensaje] = useState('');
   const [modalData, setModalData] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [toastOpen, setToastOpen] = useState(false);
+  const [compraExitosa, setCompraExitosa] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setCompraExitosa(false); 
+    }
+  }, [open]);
 
   const obtenerDescuento = () =>
     cupon?.porcentajeDescuento > 0
@@ -82,10 +91,13 @@ const CarritoDrawer = ({ open, onClose }) => {
   };
 
   const handleFinalizarCompra = () => {
-    setToastOpen(true);
+    setCompraExitosa(true);
     vaciarCarrito();
-    onClose(); // Cierra el carrito
-    navigate('/'); // Redirige al inicio
+    onClose(); 
+
+    // setTimeout(() => {
+    //   navigate('/');
+    // }, 2500);
   };
 
   if (!carrito || carrito.length === 0) {
@@ -145,7 +157,7 @@ const CarritoDrawer = ({ open, onClose }) => {
               sx={{
                 mt: 3,
                 backgroundColor: '#DC2626',
-                '&:hover': { backgroundColor: '#fee2e2' },
+                '&:hover': { backgroundColor: '#4B5563' },
               }}
               onClick={onClose}>
               Seguir comprando
@@ -493,6 +505,43 @@ const CarritoDrawer = ({ open, onClose }) => {
             </Box>
           </Box>
         </Box>
+
+        <Dialog
+          open={compraExitosa}
+          onClose={() => setCompraExitosa(false)}
+          fullWidth
+          maxWidth='sm'>
+          <DialogTitle
+            sx={{
+              textAlign: 'center',
+              fontWeight: 'bold',
+              bgcolor: '#111827',
+              color: '#fff',
+            }}>
+            ¡Gracias por tu compra!
+          </DialogTitle>
+          <DialogContent sx={{ textAlign: 'center', py: 3 }}>
+            <Typography
+              variant='h6'
+              sx={{ color: '#DC2626', fontWeight: 'bold' }}>
+              Nos comunicaremos a la brevedad
+            </Typography>
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+            <Button
+              variant='contained'
+              sx={{
+                backgroundColor: '#DC2626',
+                '&:hover': { backgroundColor: '#B91C1C' },
+              }}
+              onClick={() => {
+                setCompraExitosa(false);
+                navigate('/');
+              }}>
+              Aceptar
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Drawer>
 
       {/* Modal para detalles de personalización */}
@@ -501,20 +550,6 @@ const CarritoDrawer = ({ open, onClose }) => {
         onClose={() => setModalOpen(false)}
         customData={modalData}
       />
-
-      {/* Toast de compra exitosa */}
-      <Snackbar
-        open={toastOpen}
-        autoHideDuration={6000}
-        onClose={() => setToastOpen(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-        <Alert
-          onClose={() => setToastOpen(false)}
-          severity='success'
-          sx={{ width: '100%' }}>
-          ¡Gracias por tu compra! Nos comunicaremos a la brevedad.
-        </Alert>
-      </Snackbar>
     </>
   );
 };

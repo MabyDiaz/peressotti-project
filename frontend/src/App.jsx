@@ -10,7 +10,6 @@ import Nosotros from './pages/Nosotros.jsx';
 import Contacto from './pages/Contacto.jsx';
 import DetalleCategoria from './pages/DetalleCategoria';
 import DetalleProducto from './pages/DetalleProducto.jsx';
-import Carrito from './pages/Carrito.jsx';
 import { ToastContainer } from 'react-toastify';
 
 // Admin
@@ -65,11 +64,6 @@ function App() {
           <Route
             path='/producto/:id'
             element={<DetalleProducto />}
-          />
-
-          <Route
-            path='/carrito'
-            element={<Carrito />}
           />
 
           {/* Admin */}
