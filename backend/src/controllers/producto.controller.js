@@ -181,20 +181,6 @@ export const createProducto = async (req, res) => {
       });
     }
 
-    // const {
-    //   nombre,
-    //   descripcion,
-    //   precio,
-    //   oferta,
-    //   descuento,
-    //   esPersonalizable,
-    //   idCategoria,
-    //   imagen: imagenBody, //
-    // } = req.body;
-
-    // const imagenes =
-    //   req.files?.map((file) => `/uploads/${file.filename}`) || [];
-
     const {
       nombre,
       descripcion,
@@ -203,16 +189,12 @@ export const createProducto = async (req, res) => {
       descuento,
       esPersonalizable,
       idCategoria,
-      imagen,
     } = req.body;
+    const files = req.files || [];
 
-    // imágenes cargadas por multer
-    const files = req.files
-      ? req.files.map((file) => `/uploads/${file.filename}`)
-      : [];
-
-    // Guardar la primera como principal
-    // const imagenPrincipal = imagenes[0] || null;
+    // tomamos la primera como principal
+    const imagenPrincipal = files.length > 0 ? files[0].filename : null;
+    const todasImagenes = files.map((f) => f.filename);
 
     if (!files.length && !imagen) {
       return res.status(400).json({ error: 'Debe subir al menos una imagen' });
@@ -233,8 +215,8 @@ export const createProducto = async (req, res) => {
       descuento,
       esPersonalizable,
       idCategoria,
-      imagen: imagen || (files.length > 0 ? files[0] : null), // Principal
-      imagenes: files, // Array de imágenes
+      imagen: imagenPrincipal,
+      imagenes: todasImagenes,
     });
 
     res.status(201).json({

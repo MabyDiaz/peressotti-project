@@ -52,7 +52,7 @@ router.put(
   '/:id',
   protect,
   authorize('ADMIN'),
-  upload.single('imagen'),
+  upload.array('imagenes', 5),
   validateProductoId,
   validateProductoUpdate,
   updateProducto
