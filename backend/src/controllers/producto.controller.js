@@ -181,6 +181,20 @@ export const createProducto = async (req, res) => {
       });
     }
 
+    // const {
+    //   nombre,
+    //   descripcion,
+    //   precio,
+    //   oferta,
+    //   descuento,
+    //   esPersonalizable,
+    //   idCategoria,
+    //   imagen: imagenBody, //
+    // } = req.body;
+
+    // const imagenes =
+    //   req.files?.map((file) => `/uploads/${file.filename}`) || [];
+
     const {
       nombre,
       descripcion,
@@ -189,19 +203,20 @@ export const createProducto = async (req, res) => {
       descuento,
       esPersonalizable,
       idCategoria,
-      imagen: imagenBody, //
+      imagen,
     } = req.body;
 
-    const imagen = req.file
-      ? `/uploads/${req.file.filename}`
-      : imagenBody || null;
+    // imágenes cargadas por multer
+    const files = req.files
+      ? req.files.map((file) => `/uploads/${file.filename}`)
+      : [];
 
-    if (!req.file) {
-      return res.status(400).json({ error: 'La imagen es obligatoria' });
+    // Guardar la primera como principal
+    // const imagenPrincipal = imagenes[0] || null;
+
+    if (!files.length && !imagen) {
+      return res.status(400).json({ error: 'Debe subir al menos una imagen' });
     }
-
-    console.log('BODY recibido:', req.body);
-    console.log('FILE recibido:', req.file);
 
     const idAdministrador = req.usuario?.id;
     if (!idAdministrador) {
@@ -210,7 +225,7 @@ export const createProducto = async (req, res) => {
         .json({ error: 'No autorizado: falta administrador' });
     }
 
-    const nuevoProducto = await Producto.create({
+    const producto = await Producto.create({
       nombre,
       descripcion,
       precio,
@@ -218,13 +233,13 @@ export const createProducto = async (req, res) => {
       descuento,
       esPersonalizable,
       idCategoria,
-      idAdministrador,
-      imagen,
+      imagen: imagen || (files.length > 0 ? files[0] : null), // Principal
+      imagenes: files, // Array de imágenes
     });
 
     res.status(201).json({
       success: true,
-      data: nuevoProducto,
+      data: producto,
       message: 'Producto creado exitosamente',
     });
   } catch (err) {
@@ -238,7 +253,7 @@ export const createProducto = async (req, res) => {
 };
 
 // ============================
-// Actualizar producto
+// Actualizar producto (reemplazo completo de imágenes)
 // ============================
 export const updateProducto = async (req, res) => {
   try {
@@ -260,21 +275,47 @@ export const updateProducto = async (req, res) => {
       descuento,
       esPersonalizable,
       idCategoria,
-      imagen: imagenBody,
+      imagen, // puede venir como URL ya existente
     } = req.body;
 
-    const imagen = req.file
-      ? `/uploads/${req.file.filename}`
-      : imagenBody || producto.imagen;
+    // nuevas imágenes subidas por multer
+    const files = req.files
+      ? req.files.map((file) => `/uploads/${file.filename}`)
+      : [];
+
+    // ✅ reemplazo completo
+    // si se subieron imágenes nuevas => se pisa el array con esas
+    // si no se subieron => se conserva el existente
+    let nuevasImagenes = producto.imagenes || [];
+    if (files.length > 0) {
+      nuevasImagenes = files;
+    }
+
+    // ✅ Imagen principal
+    // - si vino "imagen" en el body, usar esa
+    // - si no, y hay nuevas imágenes, la primera será la principal
+    // - si tampoco hay nuevas, se mantiene la que ya tenía
+    let imagenPrincipal = producto.imagen;
+    if (imagen) {
+      imagenPrincipal = imagen;
+    } else if (files.length > 0) {
+      imagenPrincipal = files[0];
+    }
+
+    // Actualizamos datos
     await producto.update({
-      nombre,
-      descripcion,
-      precio,
-      oferta,
-      descuento,
-      esPersonalizable,
-      idCategoria,
-      imagen,
+      nombre: nombre || producto.nombre,
+      descripcion: descripcion || producto.descripcion,
+      precio: precio || producto.precio,
+      oferta: oferta !== undefined ? oferta : producto.oferta,
+      descuento: descuento || producto.descuento,
+      esPersonalizable:
+        esPersonalizable !== undefined
+          ? esPersonalizable
+          : producto.esPersonalizable,
+      idCategoria: idCategoria || producto.idCategoria,
+      imagen: imagenPrincipal,
+      imagenes: nuevasImagenes,
     });
 
     res.json({

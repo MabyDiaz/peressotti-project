@@ -21,6 +21,7 @@ export default function AdminProductos() {
     descripcion: '',
     precio: '',
     imagen: '',
+    imagenes: [],
     oferta: false,
     descuento: 0,
     esPersonalizable: false,
@@ -94,6 +95,7 @@ export default function AdminProductos() {
         descripcion: producto.descripcion || '',
         precio: producto.precio || '',
         imagen: producto.imagen || '',
+        imagenes: producto.imagenes || [],
         oferta: producto.oferta || false,
         descuento: producto.descuento || 0,
         esPersonalizable: producto.esPersonalizable || false,
@@ -105,6 +107,7 @@ export default function AdminProductos() {
         descripcion: '',
         precio: '',
         imagen: '',
+        imagenes: [],
         oferta: false,
         descuento: 0,
         esPersonalizable: false,
@@ -147,8 +150,14 @@ export default function AdminProductos() {
       data.append('esPersonalizable', formData.esPersonalizable ? '1' : '0');
       data.append('idCategoria', formData.idCategoria);
 
-      if (formData.imagen instanceof File) {
+      if (formData.imagen) {
         data.append('imagen', formData.imagen);
+      }
+
+      if (formData.imagenes && formData.imagenes.length > 0) {
+        for (let img of formData.imagenes) {
+          data.append('imagenes', img);
+        }
       }
 
       if (formMode === 'crear') {
@@ -266,13 +275,6 @@ export default function AdminProductos() {
           </thead>
           <tbody className='divide-y divide-gray-200 text-xs'>
             {productos.map((prod) => {
-              console.log(
-                'Imagen DB:',
-                prod.imagen,
-                'URL final:',
-                getImageUrl(prod.imagen)
-              );
-
               return (
                 <tr key={prod.id}>
                   <td className='px-0.5 py-1'>{prod.id}</td>
@@ -396,25 +398,69 @@ export default function AdminProductos() {
               <div className='row flex flex-col items-start text-xs border rounded px-3 py-2 gap-2'>
                 <input
                   type='file'
+                  name='imagenes'
+                  multiple
                   accept='image/*'
                   onChange={(e) =>
-                    setFormData({ ...formData, imagen: e.target.files[0] })
+                    setFormData({
+                      ...formData,
+                      imagenes: e.target.files,
+                      imagen: e.target.files[0] || '',
+                    })
                   }
-                  disabled={formMode === 'ver'}
-                  className='flex-1 outline-none'
                 />
-                {formData.imagen && (
-                  <img
-                    src={
-                      formData.imagen instanceof File
-                        ? URL.createObjectURL(formData.imagen)
-                        : getImageUrl(formData.imagen)
-                    }
-                    alt='Preview'
-                    className='w-20 h-20 object-cover rounded mt-2'
-                  />
+
+                {/* Preview de todas las nuevas imágenes seleccionadas */}
+                {formData.imagenes && formData.imagenes.length > 0 && (
+                  <div className='flex flex-wrap gap-2 mt-2'>
+                    {Array.from(formData.imagenes).map((file, idx) => (
+                      <img
+                        key={idx}
+                        src={URL.createObjectURL(file)}
+                        alt={`preview-${idx}`}
+                        className='w-20 h-20 object-cover rounded'
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
+
+              {/* Imágenes actuales al editar */}
+              {formMode === 'editar' && selectedProducto?.imagenes && (
+                <div className='mt-4'>
+                  <h4 className='font-semibold mb-2'>Imágenes actuales</h4>
+                  <div className='flex flex-wrap gap-4'>
+                    {selectedProducto.imagenes.map((img, idx) => (
+                      <div
+                        key={idx}
+                        className='flex flex-col items-center'>
+                        <img
+                          src={getImageUrl(img)}
+                          alt={`img-${idx}`}
+                          className='w-24 h-24 object-cover rounded border'
+                        />
+                        <button
+                          type='button'
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              imagen: img, // 👈 marcar principal
+                            })
+                          }
+                          className={`mt-2 px-2 py-1 text-xs rounded ${
+                            formData.imagen === img
+                              ? 'bg-red-600 text-white'
+                              : 'bg-gray-200 hover:bg-gray-300'
+                          }`}>
+                          {formData.imagen === img
+                            ? 'Principal'
+                            : 'Hacer principal'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Descuento */}
               <div className='row flex items-center text-xs border rounded px-3 py-2 gap-2'>

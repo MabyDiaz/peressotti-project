@@ -32,6 +32,11 @@ const Producto = sequelize.define(
       allowNull: false,
     },
 
+    imagenes: {
+      type: DataTypes.JSON,
+      defaultValue: [],
+    },
+
     oferta: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

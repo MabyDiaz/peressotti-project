@@ -152,6 +152,9 @@ function ListadoCategorias() {
                   <Typography
                     variant='h6'
                     sx={{
+                      backgroundColor: '#DC2626',
+                      color: '#fff',
+                      padding: '2px',
                       fontSize: {
                         xs: '1rem', // text-base (16px)
                         sm: '1.125rem', // text-lg (18px)
