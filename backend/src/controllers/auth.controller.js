@@ -203,7 +203,7 @@ export const perfil = async (req, res) => {
 
     if (req.user.kind === 'ADMIN') {
       const admin = await Administrador.findByPk(req.user.id, {
-        attributes: ['id', 'email'],
+        attributes: ['id', 'nombre', 'apellido', 'email'],
         include: { model: Rol, as: 'roles', attributes: ['codigo'] },
       });
       if (!admin)

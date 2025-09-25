@@ -34,7 +34,7 @@ const pages = [
   { name: 'Contacto', path: '/contacto' },
 ];
 
-const settings = ['Iniciar Sesión', 'Registrarse', 'Cerrar Sesión'];
+//const settings = ['Iniciar Sesión', 'Registrarse', 'Cerrar Sesión'];
 
 const Header = () => {
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -53,7 +53,8 @@ const Header = () => {
   // Carrito como componente
   const { toggleDrawer, CarritoDrawer } = Carrito();
 
-  const { logout } = useAuth();
+  const { user, loading, logout } = useAuth();
+  console.log('User en Header:', user);
 
   // Detectar si estamos en una ruta de categoría
   const isCategoriaPage = location.pathname.startsWith('/categoria/');
@@ -105,14 +106,6 @@ const Header = () => {
     } finally {
       logout();
     }
-  };
-
-  // Menú usuario click
-  const handleUserMenuClick = (setting) => {
-    if (setting === 'Iniciar Sesión') setShowLogin(true);
-    if (setting === 'Registrarse') setShowRegister(true);
-    if (setting === 'Cerrar Sesión') handleLogout();
-    handleCloseUserMenu();
   };
 
   return (
@@ -267,6 +260,17 @@ const Header = () => {
               </Badge>
             </IconButton>
 
+            {user ? (
+              <Typography
+                variant='body2'
+                sx={{
+                  color: 'white',
+                  mr: 1,
+                  display: { xs: 'none', md: 'block' },
+                }}>
+                Hola, {user.nombre}
+              </Typography>
+            ) : null}
             <Tooltip title='Cuenta'>
               <IconButton
                 onClick={handleOpenUserMenu}
@@ -296,10 +300,18 @@ const Header = () => {
                   boxSizing: 'border-box',
                 },
               }}>
-              {settings.map((setting) => (
+              {loading ? (
+                <MenuItem disabled>
+                  <Typography sx={{ fontSize: '0.9rem' }}>
+                    Cargando...
+                  </Typography>
+                </MenuItem>
+              ) : user ? (
                 <MenuItem
-                  key={setting}
-                  onClick={() => handleUserMenuClick(setting)}
+                  onClick={() => {
+                    handleLogout();
+                    handleCloseUserMenu();
+                  }}
                   sx={{
                     color: '#fff',
                     borderRadius: '6px',
@@ -308,14 +320,48 @@ const Header = () => {
                     '& .MuiTypography-root': {
                       fontSize: '0.9rem',
                       fontWeight: 500,
-                      textTransform: 'none',
-                      width: '100%',
-                      textAlign: 'left',
                     },
                   }}>
-                  <Typography>{setting}</Typography>
+                  <Typography>Cerrar Sesión</Typography>
                 </MenuItem>
-              ))}
+              ) : (
+                <>
+                  <MenuItem
+                    onClick={() => {
+                      setShowLogin(true);
+                      handleCloseUserMenu();
+                    }}
+                    sx={{
+                      color: '#fff',
+                      borderRadius: '6px',
+                      py: 0.7,
+                      '&:hover': { backgroundColor: '#dc2626', color: '#fff' },
+                      '& .MuiTypography-root': {
+                        fontSize: '0.9rem',
+                        fontWeight: 500,
+                      },
+                    }}>
+                    <Typography>Iniciar Sesión</Typography>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setShowRegister(true);
+                      handleCloseUserMenu();
+                    }}
+                    sx={{
+                      color: '#fff',
+                      borderRadius: '6px',
+                      py: 0.7,
+                      '&:hover': { backgroundColor: '#dc2626', color: '#fff' },
+                      '& .MuiTypography-root': {
+                        fontSize: '0.9rem',
+                        fontWeight: 500,
+                      },
+                    }}>
+                    <Typography>Registrarse</Typography>
+                  </MenuItem>
+                </>
+              )}
             </Menu>
           </Box>
         </Toolbar>

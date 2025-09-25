@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import CuponProvider from './context/CuponContext.jsx';
 import CssBaseline from '@mui/material/CssBaseline';
 import ProtectedRoute from './admin/components/ProtectedRoute';
@@ -11,6 +11,7 @@ import Contacto from './pages/Contacto.jsx';
 import DetalleCategoria from './pages/DetalleCategoria';
 import DetalleProducto from './pages/DetalleProducto.jsx';
 import { ToastContainer } from 'react-toastify';
+import { useAuth } from './hooks/useAuth';
 
 // Admin
 import AdminLogin from './admin/AdminLogin';
@@ -27,13 +28,14 @@ import AdminRoles from './admin/pages/AdminRoles.jsx';
 import './App.css';
 
 function App() {
+  const { user } = useAuth();
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
     <>
       <CuponProvider>
-        {!isAdminRoute && <Header />}
+        {!isAdminRoute && <Header key={user ? 'logged-in' : 'guest'} />}
         <CssBaseline />
 
         <Routes>
@@ -69,7 +71,7 @@ function App() {
           {/* Admin */}
           {/* Login admin */}
           <Route
-            path='/admin/login'
+            path='/admin/loginAdmin'
             element={<AdminLogin />}
           />
 

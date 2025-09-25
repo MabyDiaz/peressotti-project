@@ -1,42 +1,53 @@
-import React, { useState } from 'react';
-import { AuthContext } from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-import { setExternalLogout } from '../utils/logoutManager';
+import { useState, useEffect } from 'react';
+import api from '../api/axios';
+import { AuthContext } from '../hooks/useAuth.js';
 
-export function AuthProvider({ children }) {
-  const navigate = useNavigate();
-  const [user, setUser] = useState(() => {
-    const raw = localStorage.getItem('admin_user');
-    return raw ? JSON.parse(raw) : null;
-  });
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const saveUser = (data) => {
-    localStorage.setItem('admin_user', JSON.stringify(data));
-    setUser(data);
+  // Verificar sesión al cargar
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await api.get('/auth/perfil');
+        if (res.data.success) {
+          setUser(res.data.data);
+        } else {
+          setUser(null);
+        }
+      } catch (err) {
+        console.log(err);
+
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  // Login: actualiza el estado global
+  const login = (userData) => {
+    setUser(userData);
   };
 
-  const logout = () => {
-    // Eliminar todo del localStorage
-    localStorage.removeItem('admin_user');
-    localStorage.removeItem('cliente_user');
-    localStorage.removeItem('refresh_token');
-
-    // Limpiar estado
-    setUser(null);
-
-    // Redirigir según la ruta actual
-    if (window.location.pathname.startsWith('/admin')) {
-      navigate('/admin/login');
-  } else {
-    navigate('/');
-  }
+  // Logout: limpia cookies y estado
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch (err) {
+      console.warn('Error al cerrar sesión:', err);
+    } finally {
+      setUser(null);
+      localStorage.removeItem('admin_user');
+      localStorage.removeItem('cliente_user');
+    }
   };
-
-  setExternalLogout(logout);
 
   return (
-    <AuthContext.Provider value={{ user, saveUser, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};

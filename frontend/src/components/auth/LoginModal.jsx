@@ -2,12 +2,15 @@ import api from '../../api/axios.js';
 import { useState } from 'react';
 import { FaUser, FaLock } from 'react-icons/fa6';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../hooks/useAuth.js';
 
 const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
   const [formData, setFormData] = useState({
     email: '',
     contrasena: '',
   });
+
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,6 +21,13 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
     try {
       const res = await api.post('/auth/loginCliente', formData);
       console.log('Resultado del login:', res.data);
+
+      // Obtener los datos del usuario logueado
+      const perfilRes = await api.get('/auth/perfil');
+      if (perfilRes.data.success) {
+        login(perfilRes.data.data);
+        console.log('Usuario enviado al contexto:', perfilRes.data.data);
+      }
 
       //toast.success('¡Inicio de sesión exitoso!');
       toast(res.data.message || 'Login exitoso');
