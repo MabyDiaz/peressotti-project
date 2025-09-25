@@ -1,4 +1,3 @@
-// controllers/auth.controller.js
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Cliente, Administrador, Rol } from '../models/index.js';
@@ -16,6 +15,14 @@ const generateTokens = (payload) => {
     { expiresIn: '7d' }
   );
   return { accessToken, refreshToken };
+};
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict',
+  // domain: 'tudominio.com', // opcional en producción
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
 };
 
 // ================== CLIENTES ==================
@@ -67,37 +74,36 @@ export const registerCliente = async (req, res, next) => {
   }
 };
 
-// Login de clientes
+// LOGIN CLIENTE
 export const loginCliente = async (req, res, next) => {
   try {
     const { email, contrasena } = req.body;
     const cliente = await Cliente.findOne({ where: { email } });
-    if (!cliente) {
+    if (!cliente)
       return res
         .status(401)
         .json({ success: false, message: 'Credenciales incorrectas' });
-    }
 
     const isMatch = await bcrypt.compare(contrasena, cliente.contrasena);
-    if (!isMatch) {
+    if (!isMatch)
       return res
         .status(401)
         .json({ success: false, message: 'Credenciales incorrectas' });
-    }
 
-    const tokens = generateTokens({
-      id: cliente.id,
-      rol: 'CLIENTE',
-      kind: 'CLIENTE',
+    const tokens = generateTokens({ id: cliente.id, kind: 'CLIENTE' });
+
+    res.cookie('accessToken', tokens.accessToken, {
+      ...cookieOptions,
+      maxAge: 30 * 60 * 1000,
+    });
+    res.cookie('refreshToken', tokens.refreshToken, {
+      ...cookieOptions,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({
-      success: true,
-      message: 'Inicio de sesión exitoso',
-      data: tokens,
-    });
-  } catch (error) {
-    next(error);
+    return res.json({ success: true, message: 'Login exitoso' });
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -106,103 +112,115 @@ export const loginCliente = async (req, res, next) => {
 export const loginAdmin = async (req, res, next) => {
   try {
     const { email, contrasena } = req.body;
-
-    // Buscar administrador por email y traer sus roles
     const admin = await Administrador.findOne({
-      where: { email: req.body.email },
+      where: { email },
       include: { model: Rol, as: 'roles', attributes: ['codigo'] },
     });
-
-    if (!admin) {
+    if (!admin)
       return res
         .status(401)
         .json({ success: false, message: 'Credenciales incorrectas' });
-    }
 
-    // Verificar contraseña
     const isMatch = await bcrypt.compare(contrasena, admin.contrasena);
-    if (!isMatch) {
+    if (!isMatch)
       return res
         .status(401)
         .json({ success: false, message: 'Credenciales incorrectas' });
-    }
 
-    // Mapear roles a array de strings
-    const roles = admin.roles.map((r) => r.codigo); // ['ADMIN', 'DISENADOR']
+    const roles = admin.roles.map((r) => r.codigo);
+    const tokens = generateTokens({ id: admin.id, kind: 'ADMIN', roles });
 
-    // Crear payload del JWT
-    const payload = {
-      id: admin.id,
-      kind: 'ADMIN',
-      roles,
-    };
-
-    // Generar token y refresh token
-    const tokens = generateTokens(payload);
-
-    res.json({
-      success: true,
-      message: 'Login correcto',
-      data: {
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
-        usuario: {
-          id: admin.id,
-          email: admin.email,
-          roles,
-        },
-      },
+    res.cookie('accessToken', tokens.accessToken, {
+      ...cookieOptions,
+      maxAge: 30 * 60 * 1000,
     });
-  } catch (error) {
-    next(error);
+    res.cookie('refreshToken', tokens.refreshToken, {
+      ...cookieOptions,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.json({ success: true, message: 'Login exitoso' });
+  } catch (err) {
+    next(err);
   }
 };
 
 // Refrescar token
-export const refreshToken = async (req, res, next) => {
+export const refreshToken = (req, res) => {
+  const token = req.cookies?.refreshToken;
+  if (!token)
+    return res.status(401).json({ success: false, message: 'No autorizado' });
+
   try {
-    const { token } = req.body;
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token de refresco no proporcionado',
-      });
-    }
-
     const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-    let payload = null;
+    const tokens = generateTokens({
+      id: decoded.id,
+      kind: decoded.kind,
+      roles: decoded.roles || [],
+    });
 
-    if (decoded.kind === 'CLIENTE') {
-      const cliente = await Cliente.findByPk(decoded.id);
-      if (!cliente) {
-        return res
-          .status(401)
-          .json({ success: false, message: 'Cliente no encontrado' });
-      }
-      payload = { id: cliente.id, rol: 'CLIENTE', kind: 'CLIENTE' };
-    } else {
-      const admin = await Administrador.findByPk(decoded.id, {
-        include: { model: Rol, attributes: ['codigo'] },
+    res.cookie('accessToken', tokens.accessToken, {
+      ...cookieOptions,
+      maxAge: 30 * 60 * 1000,
+    });
+    res.cookie('refreshToken', tokens.refreshToken, {
+      ...cookieOptions,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.json({ success: true, message: 'Tokens renovados' });
+  } catch (err) {
+    console.error(err);
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    return res
+      .status(401)
+      .json({ success: false, message: 'Refresh inválido' });
+  }
+};
+
+// LOGOUT
+export const logout = (req, res) => {
+  res.clearCookie('accessToken', cookieOptions);
+  res.clearCookie('refreshToken', cookieOptions);
+  return res.json({ success: true, message: 'Sesión cerrada' });
+};
+
+// PERFIL (datos del usuario logueado)
+export const perfil = async (req, res) => {
+  try {
+    if (req.user.kind === 'CLIENTE') {
+      const cliente = await Cliente.findByPk(req.user.id, {
+        attributes: ['id', 'nombre', 'apellido', 'email', 'telefono'],
       });
-      if (!admin) {
+      if (!cliente)
         return res
-          .status(401)
-          .json({ success: false, message: 'Administrador no encontrado' });
-      }
-      payload = {
-        id: admin.id,
-        roles: admin.Rols.map((r) => r.codigo),
-        kind: 'ADMIN',
-      };
+          .status(404)
+          .json({ success: false, message: 'Cliente no encontrado' });
+
+      return res.json({ success: true, data: cliente });
     }
 
-    const tokens = generateTokens(payload);
-    res.json({
-      success: true,
-      message: 'Token refrescado exitosamente',
-      data: tokens,
-    });
-  } catch (error) {
-    next(error);
+    if (req.user.kind === 'ADMIN') {
+      const admin = await Administrador.findByPk(req.user.id, {
+        attributes: ['id', 'email'],
+        include: { model: Rol, as: 'roles', attributes: ['codigo'] },
+      });
+      if (!admin)
+        return res
+          .status(404)
+          .json({ success: false, message: 'Admin no encontrado' });
+
+      return res.json({ success: true, data: admin });
+    }
+
+    return res
+      .status(400)
+      .json({ success: false, message: 'Tipo de usuario desconocido' });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Error al obtener perfil' });
   }
 };

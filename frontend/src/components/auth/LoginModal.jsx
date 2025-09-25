@@ -99,13 +99,6 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
             </a>
           </div>
         </form>
-        {/* Botón de cerrar */}
-
-        {/* <button
-          onClick={onClose}
-          className='btn btn-danger mt-4 w-full'>
-          Cerrar
-        </button> */}
       </div>
     </div>
   );
