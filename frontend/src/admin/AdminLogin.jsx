@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import api from '../api/axios';
-import { useAuth } from '../hooks/useAuth';
+import api from '../api/axios.js';
+import { useAuth } from '../hooks/useAuth.js';
 
 export default function AdminLogin() {
   const [formData, setFormData] = useState({ email: '', contrasena: '' });
@@ -21,25 +21,19 @@ export default function AdminLogin() {
       const res = await api.post('/auth/loginAdmin', formData);
 
       if (res.data.success) {
-        const { accessToken, refreshToken, usuario } = res.data.data;
+        // Extraer el usuario desde res.data.data
+        const { usuario } = res.data.data;
 
-        // Guardar tokens
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-
-        // Guardar usuario con roles que vienen del backend
+        // Solo guardar info básica (sin tokens)
         const userData = {
           email: usuario.email,
-          roles: usuario.roles, // <-- array, ej: ['ADMIN'] o ['DISENADOR']
-          accessToken,
+          roles: usuario.roles, // Ej: ['ADMIN'] o ['DISENADOR']
         };
 
         localStorage.setItem('admin_user', JSON.stringify(userData));
         saveUser(userData);
-
-        toast.success(res.data.message || 'Inicio de sesión exitoso');
-
-        navigate('/admin'); 
+        toast.success('Inicio de sesión exitoso');
+        navigate('/admin');
       } else {
         toast.error('Credenciales incorrectas');
       }
