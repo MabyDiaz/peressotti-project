@@ -176,9 +176,6 @@ export default function AdminCategorias() {
         <table className='min-w-full divide-y divide-gray-200'>
           <thead className='bg-gray-50'>
             <tr>
-              <th className='px-0.5 py-1 text-left text-xs font-medium text-gray-700 uppercase'>
-                ID
-              </th>
               <th className='px-0.5 py-1 text-left text-xs font-medium text-gray-700 uppercase max-w-[80px] truncate overflow-hidden'>
                 Nombre
               </th>
@@ -200,12 +197,11 @@ export default function AdminCategorias() {
             {categorias.map((cat) => {
               return (
                 <tr key={cat.id}>
-                  <td className='px-0.5 py-1'>{cat.id}</td>
-                  <td className='px-0.5 py-1 max-w-[80px] truncate overflow-hidden'>
+                  <td className='px-0.5 py-1  max-w-[80px] truncate overflow-hidden'>
                     {cat.nombre}
                   </td>
 
-                  <td className='px-0.5 py-1'>
+                  <td className='px-0.5 py-1 !text-center'>
                     {cat.imagen && (
                       <img
                         src={getImageUrl(cat.imagen)}
@@ -219,7 +215,7 @@ export default function AdminCategorias() {
                     {cat.activo ? 'Activo' : 'Inactivo'}
                   </td>
 
-                  <td className='px-0.5 py-1 text-center'>
+                  <td className='px-0.5 py-1 !text-center'>
                     <button
                       onClick={() => openForm('ver', cat)}
                       className='px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-xs mr-1'>

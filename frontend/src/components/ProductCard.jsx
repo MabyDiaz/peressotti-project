@@ -74,12 +74,6 @@ const ProductCard = ({ producto, rating, onRatingChange }) => {
       );
     }
 
-    // En tu componente, haz un console.log
-    console.log(
-      'URL de la imagen:',
-      `http://localhost:3000/uploads/${producto.imagen}`
-    );
-
     return (
       <p className='mt-1 text-sm font-bold text-gray-800'>
         ${producto.precio.toFixed(2)}
@@ -108,7 +102,7 @@ const ProductCard = ({ producto, rating, onRatingChange }) => {
 
       <Link to={`/productos/${producto.id}`}>
         <img
-          src={getImageUrl(producto.imagen)}
+          src={getImageUrl(producto.imagenPrincipal) || null}
           alt={producto.nombre}
           className='w-full h-32 object-cover'
         />

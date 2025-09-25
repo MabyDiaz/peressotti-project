@@ -173,13 +173,10 @@ export default function AdminRoles() {
         <table className='min-w-full divide-y divide-gray-200'>
           <thead className='bg-gray-50'>
             <tr>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
-                ID
-              </th>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Codigo
               </th>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Descripcion
               </th>
               <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
@@ -193,9 +190,8 @@ export default function AdminRoles() {
           <tbody className='divide-y divide-gray-200 text-xs'>
             {roles.map((a) => (
               <tr key={a.id}>
-                <td className='px-4 py-2'>{a.id}</td>
-                <td className='px-4 py-2'>{a.codigo}</td>
-                <td className='px-4 py-2'>{a.descripcion}</td>
+                <td className='px-4 py-2 !text-center'>{a.codigo}</td>
+                <td className='px-4 py-2 !text-center'>{a.descripcion}</td>
                 <td className='px-4 py-2 !text-center'>
                   {a.activo ? 'Activo' : 'Inactivo'}
                 </td>

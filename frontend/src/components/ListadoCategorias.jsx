@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/axios';
+import api from '../api/axios.js';
+import { getImageUrl } from '../utils/getImageUrl.js';
+
 import {
   Box,
   Grid,
@@ -129,12 +131,8 @@ function ListadoCategorias() {
                   }}>
                   <CardMedia
                     component='img'
-                    image={
-                      cat.imagen.includes('drive.google.com/uc?id=')
-                        ? cat.imagen.replace('uc?id=', 'thumbnail?id=')
-                        : cat.imagen
-                    }
-                    alt={cat.nombre}
+                    image={getImageUrl(cat.imagen) || null} // si está vacío, pasa null
+                    alt={cat.nombre || 'Categoría sin nombre'}
                     sx={{
                       width: '100%',
                       height: 180,

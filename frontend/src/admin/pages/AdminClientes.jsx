@@ -195,27 +195,24 @@ export default function AdminClientes() {
           <thead className='bg-gray-50'>
             <tr>
               <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
-                ID
-              </th>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
                 Nombre
               </th>
               <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
                 Apellido
               </th>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Teléfono
               </th>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Email
               </th>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Fecha Registro
               </th>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Estado
               </th>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-center text-xs font-medium text-gray-700 uppercase'>
+              <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Acciones
               </th>
             </tr>
@@ -223,20 +220,19 @@ export default function AdminClientes() {
           <tbody className='divide-y divide-gray-200 text-xs'>
             {clientes.map((c) => (
               <tr key={c.id}>
-                <td className='px-4 py-2'>{c.id}</td>
                 <td className='px-4 py-2'>{c.nombre}</td>
                 <td className='px-4 py-2'>{c.apellido}</td>
-                <td className='px-4 py-2'>{c.telefono}</td>
-                <td className='px-4 py-2'>{c.email}</td>
-                <td className='px-4 py-2 text-center'>
+                <td className='px-4 py-2 !text-center'>{c.telefono}</td>
+                <td className='px-4 py-2 !text-center'>{c.email}</td>
+                <td className='px-4 py-2 !text-center'>
                   {c.fechaRegistro
                     ? new Date(c.fechaRegistro).toLocaleDateString()
                     : ''}
                 </td>
-                <td className='px-4 py-2'>
+                <td className='px-4 py-2 !text-center'>
                   {c.activo ? 'Activo' : 'Inactivo'}
                 </td>
-                <td className='px-4 py-2 text-center'>
+                <td className='px-4 py-2 !text-center'>
                   <button
                     onClick={() => openForm('ver', c)}
                     className='px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm mr-1'>

@@ -309,16 +309,13 @@ export default function AdminPedidos() {
         <table className='min-w-full divide-y divide-gray-200'>
           <thead className='bg-gray-50'>
             <tr>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
-                ID
-              </th>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Número
               </th>
               <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
                 Cliente
               </th>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Fecha
               </th>
               <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
@@ -338,8 +335,7 @@ export default function AdminPedidos() {
           <tbody className='divide-y divide-gray-200 text-xs'>
             {pedidos.map((p) => (
               <tr key={p.id}>
-                <td className='px-4 py-2'>{p.id}</td>
-                <td className='px-4 py-2'>{p.numeroPedido}</td>
+                <td className='px-4 py-2 !text-center'>{p.numeroPedido}</td>
                 <td className='px-4 py-2'>
                   <button
                     onClick={() => showClientInfo(p.idCliente)}

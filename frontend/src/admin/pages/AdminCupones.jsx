@@ -185,12 +185,9 @@ export default function AdminCupones() {
           <thead className='bg-gray-50'>
             <tr>
               <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
-                ID
-              </th>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
                 Nombre Cupon
               </th>
-              <th className='bg-[#e8e9ea] px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Codigo Cupon
               </th>
               <th className='bg-[#e8e9ea] px-4 py-2 !text-center text-xs font-medium text-gray-700 uppercase'>
@@ -207,9 +204,8 @@ export default function AdminCupones() {
           <tbody className='divide-y divide-gray-200 text-xs'>
             {cupones.map((a) => (
               <tr key={a.id}>
-                <td className='px-4 py-2'>{a.id}</td>
                 <td className='px-4 py-2'>{a.nombreCupon}</td>
-                <td className='px-4 py-2'>{a.codigoCupon}</td>
+                <td className='px-4 py-2 !text-center'>{a.codigoCupon}</td>
                 <td className='px-4 py-2 !text-center'>
                   {a.porcentajeDescuento}
                 </td>

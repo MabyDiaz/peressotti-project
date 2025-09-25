@@ -20,8 +20,15 @@ export default function AdminProductos() {
     nombre: '',
     descripcion: '',
     precio: '',
-    imagen: '',
+    // new files (File objects)
     imagenes: [],
+    // existing filenames (strings con path /uploads/xxx)
+    imagenesExistentes: [],
+    // principal: si es una existente -> string '/uploads/xxx'
+    // si es una nueva -> usamos imagenPrincipalIsNew=true e imagenPrincipalIndex (index en imagenes)
+    imagenPrincipal: '',
+    imagenPrincipalIsNew: false,
+    imagenPrincipalIndex: null,
     oferta: false,
     descuento: 0,
     esPersonalizable: false,
@@ -94,20 +101,31 @@ export default function AdminProductos() {
         nombre: producto.nombre || '',
         descripcion: producto.descripcion || '',
         precio: producto.precio || '',
-        imagen: producto.imagen || '',
-        imagenes: producto.imagenes || [],
+        imagenes: [], // archivos nuevos
+        imagenesExistentes: producto.imagenes || [], // strings guardadas en DB
+        imagenPrincipal:
+          producto.imagenPrincipal ||
+          producto.imagen ||
+          producto.imagenes?.[0] ||
+          '',
+        imagenPrincipalIsNew: false,
+        imagenPrincipalIndex: null,
         oferta: producto.oferta || false,
         descuento: producto.descuento || 0,
         esPersonalizable: producto.esPersonalizable || false,
         idCategoria: producto.idCategoria || '',
       });
     } else {
+      // crear nuevo
       setFormData({
         nombre: '',
         descripcion: '',
         precio: '',
-        imagen: '',
         imagenes: [],
+        imagenesExistentes: [],
+        imagenPrincipal: '',
+        imagenPrincipalIsNew: false,
+        imagenPrincipalIndex: null,
         oferta: false,
         descuento: 0,
         esPersonalizable: false,
@@ -139,7 +157,6 @@ export default function AdminProductos() {
   // Guardar producto (crear o editar)
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const data = new FormData();
       data.append('nombre', formData.nombre);
@@ -150,13 +167,31 @@ export default function AdminProductos() {
       data.append('esPersonalizable', formData.esPersonalizable ? '1' : '0');
       data.append('idCategoria', formData.idCategoria);
 
-      if (formData.imagen) {
-        data.append('imagen', formData.imagen);
+      if (formMode === 'editar') {
+        // enviar las imágenes existentes que quiero conservar
+        data.append(
+          'keepImagenes',
+          JSON.stringify(formData.imagenesExistentes || [])
+        );
       }
 
+      // indicar cuál será la imagen principal:
+      if (formData.imagenPrincipalIsNew) {
+        // principal es una de las nuevas seleccionadas (index)
+        data.append('imagenPrincipalIsNew', 'true');
+        data.append(
+          'imagenPrincipalIndex',
+          String(formData.imagenPrincipalIndex ?? 0)
+        );
+      } else if (formData.imagenPrincipal) {
+        // principal es una existente (string)
+        data.append('imagenPrincipal', formData.imagenPrincipal);
+      }
+
+      // agregar archivos nuevos
       if (formData.imagenes && formData.imagenes.length > 0) {
-        for (let img of formData.imagenes) {
-          data.append('imagenes', img);
+        for (let file of formData.imagenes) {
+          data.append('imagenes', file);
         }
       }
 
@@ -165,7 +200,7 @@ export default function AdminProductos() {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
         toast.success('Producto creado');
-      } else if (formMode === 'editar') {
+      } else {
         await api.put(`/productos/${selectedProducto.id}`, data, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
@@ -175,6 +210,7 @@ export default function AdminProductos() {
       fetchProductos();
       closeForm();
     } catch (error) {
+      console.error(error);
       toast.error(error.response?.data?.message || 'Error al guardar');
     }
   };
@@ -238,37 +274,34 @@ export default function AdminProductos() {
         <table className='min-w-full divide-y divide-gray-200'>
           <thead className='bg-gray-50'>
             <tr>
-              <th className='px-0.5 py-1 text-left text-xs font-medium text-gray-700 uppercase'>
-                ID
-              </th>
-              <th className='px-0.5 py-1 text-left text-xs font-medium text-gray-700 uppercase max-w-[80px] truncate overflow-hidden'>
+              <th className='px-0.5 py-1 text-left text-xs font-medium text-gray-700 uppercase max-w-[100px] whitespace-normal overflow-hidden'>
                 Nombre
               </th>
-              <th className='px-0.5 py-1 text-left text-xs font-medium text-gray-700 uppercase max-w-[180px] truncate overflow-hidden'>
+              <th className='px-0.5 py-1 !text-center text-xs font-medium text-gray-700 uppercase max-w-[180px] whitespace-normal overflow-hidden'>
                 Descripción
               </th>
-              <th className='px-0.5 py-1 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='px-0.5 py-1 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Precio
               </th>
-              <th className='px-0.5 py-1 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='px-0.5 py-1 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Imagen
               </th>
-              <th className='px-0.5 py-1 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='px-0.5 py-1 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Oferta
               </th>
-              <th className='px-0.5 py-1 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='px-0.5 py-1 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Descuento
               </th>
-              <th className='px-0.5 py-1 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='px-0.5 py-1 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Personalizable
               </th>
-              <th className='px-0.5 py-1 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='px-0.5 py-1 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Estado
               </th>
-              <th className='px-0.5 py-1 text-left text-xs font-medium text-gray-700 uppercase'>
+              <th className='px-0.5 py-1 !text-center text-xs font-medium text-gray-700 uppercase max-w-[100px]'>
                 Categoría
               </th>
-              <th className='px-0.5 py-1 text-center text-xs font-medium text-gray-700 uppercase'>
+              <th className='px-0.5 py-1 !text-center text-xs font-medium text-gray-700 uppercase'>
                 Acciones
               </th>
             </tr>
@@ -277,35 +310,40 @@ export default function AdminProductos() {
             {productos.map((prod) => {
               return (
                 <tr key={prod.id}>
-                  <td className='px-0.5 py-1'>{prod.id}</td>
-                  <td className='px-0.5 py-1 max-w-[80px] truncate overflow-hidden'>
+                  <td className='px-0.5 py-1 max-w-[100px] whitespace-normal overflow-hidden'>
                     {prod.nombre}
                   </td>
-                  <td className='px-0.5 py-1 max-w-[180px] truncate overflow-hidden'>
+                  <td className='px-0.5 py-1 max-w-[180px] whitespace-normal overflow-hidden'>
                     {prod.descripcion}
                   </td>
-                  <td className='px-0.5 py-1'>${prod.precio.toFixed(2)}</td>
-                  <td className='px-0.5 py-1'>
-                    {prod.imagen && (
+                  <td className='px-0.5 py-1 !text-center'>
+                    ${prod.precio.toFixed(2)}
+                  </td>
+                  <td className='px-0.5 py-1 !text-center'>
+                    {prod.imagenPrincipal && (
                       <img
-                        src={getImageUrl(prod.imagen)}
+                        src={getImageUrl(prod.imagenPrincipal)}
                         alt={prod.nombre}
                         className='w-12 h-12 object-cover rounded'
                       />
                     )}
                   </td>
-                  <td className='px-0.5 py-1'>{prod.oferta ? 'Sí' : 'No'}</td>
-                  <td className='px-0.5 py-1'>{prod.descuento}%</td>
-                  <td className='px-0.5 py-1'>
+                  <td className='px-0.5 py-1 !text-center'>
+                    {prod.oferta ? 'Sí' : 'No'}
+                  </td>
+                  <td className='px-0.5 py-1 !text-center'>
+                    {prod.descuento}%
+                  </td>
+                  <td className='px-0.5 py-1 !text-center'>
                     {prod.esPersonalizable ? 'Sí' : 'No'}
                   </td>
-                  <td className='px-0.5 py-1'>
+                  <td className='px-0.5 py-1 !text-center'>
                     {prod.activo ? 'Activo' : 'Inactivo'}
                   </td>
-                  <td className='px-0.5 py-1'>
+                  <td className='px-0.5 py-1 !text-center max-w-[100px]'>
                     {prod.Categorium?.nombre || 'N/A'}
                   </td>
-                  <td className='px-0.5 py-1 text-center'>
+                  <td className='px-0.5 py-1 !text-center'>
                     <button
                       onClick={() => openForm('ver', prod)}
                       className='px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-xs mr-1'>
@@ -401,13 +439,24 @@ export default function AdminProductos() {
                   name='imagenes'
                   multiple
                   accept='image/*'
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      imagenes: e.target.files,
-                      imagen: e.target.files[0] || '',
-                    })
-                  }
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files);
+                    setFormData((prev) => {
+                      // si no hay imagen principal seleccionada, tomar la primera nueva como principal por default
+                      let newPrincipalIsNew = prev.imagenPrincipalIsNew;
+                      let newPrincipalIndex = prev.imagenPrincipalIndex;
+                      if (!prev.imagenPrincipal && files.length > 0) {
+                        newPrincipalIsNew = true;
+                        newPrincipalIndex = 0;
+                      }
+                      return {
+                        ...prev,
+                        imagenes: files,
+                        imagenPrincipalIsNew: newPrincipalIsNew,
+                        imagenPrincipalIndex: newPrincipalIndex,
+                      };
+                    });
+                  }}
                 />
 
                 {/* Preview de todas las nuevas imágenes seleccionadas */}
@@ -418,49 +467,153 @@ export default function AdminProductos() {
                         key={idx}
                         src={URL.createObjectURL(file)}
                         alt={`preview-${idx}`}
-                        className='w-20 h-20 object-cover rounded'
+                        className='w-15 h-15 object-cover rounded'
                       />
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Imágenes actuales al editar */}
-              {formMode === 'editar' && selectedProducto?.imagenes && (
-                <div className='mt-4'>
-                  <h4 className='font-semibold mb-2'>Imágenes actuales</h4>
-                  <div className='flex flex-wrap gap-4'>
-                    {selectedProducto.imagenes.map((img, idx) => (
-                      <div
-                        key={idx}
-                        className='flex flex-col items-center'>
-                        <img
-                          src={getImageUrl(img)}
-                          alt={`img-${idx}`}
-                          className='w-24 h-24 object-cover rounded border'
-                        />
+              {/* Preview nuevas */}
+              {formData.imagenes.length > 0 && (
+                <div className='flex gap-2 flex-wrap'>
+                  {formData.imagenes.map((file, idx) => (
+                    <div
+                      key={idx}
+                      className='relative text-xs'>
+                      <img
+                        src={URL.createObjectURL(file)}
+                        className='w-15 h-15 object-cover rounded'
+                        alt={file.name}
+                      />
+                      <div className='flex gap-1 mt-1'>
                         <button
                           type='button'
-                          onClick={() =>
-                            setFormData({
-                              ...formData,
-                              imagen: img, // 👈 marcar principal
-                            })
-                          }
-                          className={`mt-2 px-2 py-1 text-xs rounded ${
-                            formData.imagen === img
+                          onClick={() => {
+                            setFormData((prev) => {
+                              const newFiles = prev.imagenes.filter(
+                                (_, i) => i !== idx
+                              );
+                              // si se borró la que era principal, resetear principal a primera nueva o a existing
+                              let newPrincipalIsNew = prev.imagenPrincipalIsNew;
+                              let newPrincipalIndex = prev.imagenPrincipalIndex;
+                              if (
+                                prev.imagenPrincipalIsNew &&
+                                prev.imagenPrincipalIndex === idx
+                              ) {
+                                if (newFiles.length > 0) {
+                                  newPrincipalIndex = 0;
+                                  newPrincipalIsNew = true;
+                                } else {
+                                  newPrincipalIsNew = false;
+                                  newPrincipalIndex = null;
+                                }
+                              } else if (
+                                prev.imagenPrincipalIsNew &&
+                                prev.imagenPrincipalIndex > idx
+                              ) {
+                                newPrincipalIndex =
+                                  prev.imagenPrincipalIndex - 1; // shift index
+                              }
+                              return {
+                                ...prev,
+                                imagenes: newFiles,
+                                imagenPrincipalIsNew: newPrincipalIsNew,
+                                imagenPrincipalIndex: newPrincipalIndex,
+                              };
+                            });
+                          }}
+                          className='px-1 bg-red-500 text-white rounded'>
+                          x
+                        </button>
+
+                        <button
+                          type='button'
+                          onClick={() => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              imagenPrincipalIsNew: true,
+                              imagenPrincipalIndex: idx,
+                              imagenPrincipal: '',
+                            }));
+                          }}
+                          className={`px-1 rounded ${
+                            formData.imagenPrincipalIsNew &&
+                            formData.imagenPrincipalIndex === idx
                               ? 'bg-red-600 text-white'
-                              : 'bg-gray-200 hover:bg-gray-300'
+                              : 'bg-gray-200'
                           }`}>
-                          {formData.imagen === img
+                          {formData.imagenPrincipalIsNew &&
+                          formData.imagenPrincipalIndex === idx
                             ? 'Principal'
                             : 'Hacer principal'}
                         </button>
                       </div>
-                    ))}
-                  </div>
+                      <div className='text-[10px] truncate w-20'>
+                        {file.name}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
+
+              {formMode === 'editar' &&
+                formData.imagenesExistentes.length > 0 && (
+                  <div>
+                    <h4 className='font-semibold mb-2'>Imágenes actuales</h4>
+                    <div className='flex flex-wrap gap-4'>
+                      {formData.imagenesExistentes.map((img, idx) => (
+                        <div
+                          key={idx}
+                          className='flex flex-col items-center text-xs'>
+                          <img
+                            src={getImageUrl(img)}
+                            alt={`img-${idx}`}
+                            className='w-15 h-15 object-cover rounded border'
+                          />
+                          <div className='flex gap-1 mt-1'>
+                            <button
+                              type='button'
+                              onClick={() => {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  imagenPrincipalIsNew: false,
+                                  imagenPrincipal: img,
+                                  imagenPrincipalIndex: null,
+                                }));
+                              }}
+                              className={`px-2 py-1 rounded ${
+                                formData.imagenPrincipal === img &&
+                                !formData.imagenPrincipalIsNew
+                                  ? 'bg-red-600 text-white'
+                                  : 'bg-gray-200'
+                              }`}>
+                              {formData.imagenPrincipal === img &&
+                              !formData.imagenPrincipalIsNew
+                                ? 'Principal'
+                                : 'Hacer principal'}
+                            </button>
+
+                            <button
+                              type='button'
+                              onClick={() => {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  imagenesExistentes:
+                                    prev.imagenesExistentes.filter(
+                                      (x) => x !== img
+                                    ),
+                                }));
+                              }}
+                              className='px-2 py-1 bg-red-500 text-white rounded'>
+                              x
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
               {/* Descuento */}
               <div className='row flex items-center text-xs border rounded px-3 py-2 gap-2'>

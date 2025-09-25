@@ -76,11 +76,16 @@ app.use((req, res, next) => {
   res.removeHeader('Cross-Origin-Resource-Policy');
   next();
 });
+
 // Middleware para servir imágenes
 app.use(
   '/uploads',
   (req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
     next();
   },
   express.static(path.join(process.cwd(), 'uploads'))

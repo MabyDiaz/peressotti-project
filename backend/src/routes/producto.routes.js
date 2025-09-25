@@ -42,7 +42,7 @@ router.post(
   '/',
   protect,
   authorize('ADMIN'),
-  upload.array('imagenes', 5),
+  upload.array('imagenes', 10),
   validateProductoCreate,
   createProducto
 );
@@ -52,7 +52,7 @@ router.put(
   '/:id',
   protect,
   authorize('ADMIN'),
-  upload.array('imagenes', 5),
+  upload.array('imagenes', 10),
   validateProductoId,
   validateProductoUpdate,
   updateProducto

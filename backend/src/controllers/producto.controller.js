@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
 import { Producto, Categoria } from '../models/index.js';
@@ -170,15 +172,75 @@ export const getProductosByCategoria = async (req, res) => {
 // ============================
 // Crear producto
 // ============================
+// export const createProducto = async (req, res) => {
+//   try {
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//       return res.status(400).json({
+//         success: false,
+//         error: 'Datos de entrada inválidos',
+//         details: errors.array(),
+//       });
+//     }
+
+//     const {
+//       nombre,
+//       descripcion,
+//       precio,
+//       oferta,
+//       descuento,
+//       esPersonalizable,
+//       idCategoria,
+//     } = req.body;
+//     const files = req.files || [];
+
+//     // tomamos la primera como principal
+//     const imagenPrincipal = files.length > 0 ? files[0].filename : null;
+//     const todasImagenes = files.map((f) => f.filename);
+
+//     if (!files.length && !imagen) {
+//       return res.status(400).json({ error: 'Debe subir al menos una imagen' });
+//     }
+
+//     const idAdministrador = req.usuario?.id;
+//     if (!idAdministrador) {
+//       return res
+//         .status(401)
+//         .json({ error: 'No autorizado: falta administrador' });
+//     }
+
+//     const producto = await Producto.create({
+//       nombre,
+//       descripcion,
+//       precio,
+//       oferta,
+//       descuento,
+//       esPersonalizable,
+//       idCategoria,
+//       imagen: imagenPrincipal,
+//       imagenes: todasImagenes,
+//     });
+
+//     res.status(201).json({
+//       success: true,
+//       data: producto,
+//       message: 'Producto creado exitosamente',
+//     });
+//   } catch (err) {
+//     console.error('Error en createProducto:', err);
+//     res.status(500).json({
+//       success: false,
+//       error: 'Error interno del servidor',
+//       message: 'No se pudo crear el producto',
+//     });
+//   }
+// };
+
 export const createProducto = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        error: 'Datos de entrada inválidos',
-        details: errors.array(),
-      });
+      return res.status(400).json({ success: false, details: errors.array() });
     }
 
     const {
@@ -189,22 +251,35 @@ export const createProducto = async (req, res) => {
       descuento,
       esPersonalizable,
       idCategoria,
+      // imagenPrincipal puede venir si el frontend decide (pero en create normalmente elegimos entre las subidas)
+      imagenPrincipal: imagenPrincipalBody,
+      imagenPrincipalIsNew,
+      imagenPrincipalIndex,
     } = req.body;
-    const files = req.files || [];
 
-    // tomamos la primera como principal
-    const imagenPrincipal = files.length > 0 ? files[0].filename : null;
-    const todasImagenes = files.map((f) => f.filename);
+    const idAdministrador = req.usuario?.id;
+    if (!idAdministrador)
+      return res.status(401).json({ error: 'No autorizado' });
 
-    if (!files.length && !imagen) {
+    // archivos subidos (nuevos)
+    const uploaded = (req.files || []).map((f) => `/uploads/${f.filename}`);
+
+    if (!uploaded.length && !imagenPrincipalBody) {
       return res.status(400).json({ error: 'Debe subir al menos una imagen' });
     }
 
-    const idAdministrador = req.usuario?.id;
-    if (!idAdministrador) {
-      return res
-        .status(401)
-        .json({ error: 'No autorizado: falta administrador' });
+    // determinar imagenPrincipal
+    let imagenPrincipal = null;
+    if (
+      imagenPrincipalIsNew === 'true' &&
+      typeof imagenPrincipalIndex !== 'undefined'
+    ) {
+      const idx = parseInt(imagenPrincipalIndex, 10);
+      imagenPrincipal = uploaded[idx] || null;
+    } else if (imagenPrincipalBody) {
+      imagenPrincipal = imagenPrincipalBody;
+    } else {
+      imagenPrincipal = uploaded[0] || null;
     }
 
     const producto = await Producto.create({
@@ -215,8 +290,8 @@ export const createProducto = async (req, res) => {
       descuento,
       esPersonalizable,
       idCategoria,
-      imagen: imagenPrincipal,
-      imagenes: todasImagenes,
+      imagenes: uploaded,
+      imagenPrincipal,
     });
 
     res.status(201).json({
@@ -225,29 +300,100 @@ export const createProducto = async (req, res) => {
       message: 'Producto creado exitosamente',
     });
   } catch (err) {
-    console.error('Error en createProducto:', err);
-    res.status(500).json({
-      success: false,
-      error: 'Error interno del servidor',
-      message: 'No se pudo crear el producto',
-    });
+    console.error(err);
+    res
+      .status(500)
+      .json({ success: false, message: 'Error al crear producto' });
   }
 };
 
 // ============================
 // Actualizar producto (reemplazo completo de imágenes)
 // ============================
+// export const updateProducto = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const producto = await Producto.findByPk(id);
+//     if (!producto) {
+//       return res.status(404).json({
+//         success: false,
+//         error: 'Producto no encontrado',
+//       });
+//     }
+
+//     const {
+//       nombre,
+//       descripcion,
+//       precio,
+//       oferta,
+//       descuento,
+//       esPersonalizable,
+//       idCategoria,
+//       imagen, // puede venir como URL ya existente
+//     } = req.body;
+
+//     // nuevas imágenes subidas por multer
+//     const files = req.files
+//       ? req.files.map((file) => `/uploads/${file.filename}`)
+//       : [];
+
+//     // ✅ reemplazo completo
+//     // si se subieron imágenes nuevas => se pisa el array con esas
+//     // si no se subieron => se conserva el existente
+//     let nuevasImagenes = producto.imagenes || [];
+//     if (files.length > 0) {
+//       nuevasImagenes = files;
+//     }
+
+//     // ✅ Imagen principal
+//     // - si vino "imagen" en el body, usar esa
+//     // - si no, y hay nuevas imágenes, la primera será la principal
+//     // - si tampoco hay nuevas, se mantiene la que ya tenía
+//     let imagenPrincipal = producto.imagen;
+//     if (imagen) {
+//       imagenPrincipal = imagen;
+//     } else if (files.length > 0) {
+//       imagenPrincipal = files[0];
+//     }
+
+//     // Actualizamos datos
+//     await producto.update({
+//       nombre: nombre || producto.nombre,
+//       descripcion: descripcion || producto.descripcion,
+//       precio: precio || producto.precio,
+//       oferta: oferta !== undefined ? oferta : producto.oferta,
+//       descuento: descuento || producto.descuento,
+//       esPersonalizable:
+//         esPersonalizable !== undefined
+//           ? esPersonalizable
+//           : producto.esPersonalizable,
+//       idCategoria: idCategoria || producto.idCategoria,
+//       imagen: imagenPrincipal,
+//       imagenes: nuevasImagenes,
+//     });
+
+//     res.json({
+//       success: true,
+//       data: producto,
+//       message: 'Producto actualizado exitosamente',
+//     });
+//   } catch (err) {
+//     console.error('Error en updateProducto:', err);
+//     res.status(500).json({
+//       success: false,
+//       error: 'Error interno del servidor',
+//       message: 'No se pudo actualizar el producto',
+//     });
+//   }
+// };
+
 export const updateProducto = async (req, res) => {
   try {
     const { id } = req.params;
-
     const producto = await Producto.findByPk(id);
-    if (!producto) {
-      return res.status(404).json({
-        success: false,
-        error: 'Producto no encontrado',
-      });
-    }
+    if (!producto)
+      return res.status(404).json({ error: 'Producto no encontrado' });
 
     const {
       nombre,
@@ -257,61 +403,99 @@ export const updateProducto = async (req, res) => {
       descuento,
       esPersonalizable,
       idCategoria,
-      imagen, // puede venir como URL ya existente
+      imagen: imagenBody, // si estabas usando 'imagen' en frontend; ajustá al nombre
+      imagenPrincipal,
+      imagenPrincipalIsNew,
+      imagenPrincipalIndex,
+      keepImagenes: keepImagenesRaw,
     } = req.body;
 
-    // nuevas imágenes subidas por multer
-    const files = req.files
-      ? req.files.map((file) => `/uploads/${file.filename}`)
-      : [];
-
-    // ✅ reemplazo completo
-    // si se subieron imágenes nuevas => se pisa el array con esas
-    // si no se subieron => se conserva el existente
-    let nuevasImagenes = producto.imagenes || [];
-    if (files.length > 0) {
-      nuevasImagenes = files;
+    // parsear keepImagenes (puede venir como JSON string)
+    let keepImagenes = [];
+    if (keepImagenesRaw) {
+      try {
+        keepImagenes =
+          typeof keepImagenesRaw === 'string'
+            ? JSON.parse(keepImagenesRaw)
+            : keepImagenesRaw;
+      } catch {
+        keepImagenes = Array.isArray(keepImagenesRaw)
+          ? keepImagenesRaw
+          : [keepImagenesRaw];
+      }
+    } else {
+      keepImagenes = producto.imagenes || [];
     }
 
-    // ✅ Imagen principal
-    // - si vino "imagen" en el body, usar esa
-    // - si no, y hay nuevas imágenes, la primera será la principal
-    // - si tampoco hay nuevas, se mantiene la que ya tenía
-    let imagenPrincipal = producto.imagen;
-    if (imagen) {
-      imagenPrincipal = imagen;
-    } else if (files.length > 0) {
-      imagenPrincipal = files[0];
+    // archivos nuevos subidos
+    const uploaded = (req.files || []).map((f) => `/uploads/${f.filename}`);
+
+    // nuevas imagenes serán: keepImagenes + uploaded
+    const nuevasImagenes = [...keepImagenes, ...uploaded];
+
+    // eliminar físicamente las imágenes que estaban y ya no están (opcional)
+    try {
+      const originales = producto.imagenes || [];
+      const eliminadas = originales.filter(
+        (img) => !nuevasImagenes.includes(img)
+      );
+      eliminadas.forEach((imgPath) => {
+        const fileRel = imgPath.replace(/^\//, ''); // 'uploads/xxx'
+        const fullPath = path.join(process.cwd(), fileRel);
+        fs.unlink(fullPath, (err) => {
+          if (err)
+            console.warn('No se pudo borrar archivo:', fullPath, err.message);
+        });
+      });
+    } catch (err) {
+      console.warn('Error al intentar borrar archivos antiguos:', err.message);
     }
 
-    // Actualizamos datos
+    // determinar imagen principal
+    let principal = null;
+    if (
+      imagenPrincipalIsNew === 'true' &&
+      typeof imagenPrincipalIndex !== 'undefined'
+    ) {
+      const idx = parseInt(imagenPrincipalIndex, 10);
+      principal = uploaded[idx] || null;
+    } else if (imagenPrincipal) {
+      principal = imagenPrincipal;
+    } else if (
+      producto.imagenPrincipal &&
+      nuevasImagenes.includes(producto.imagenPrincipal)
+    ) {
+      principal = producto.imagenPrincipal;
+    } else {
+      principal = nuevasImagenes[0] || null;
+    }
+
+    // actualizar
     await producto.update({
-      nombre: nombre || producto.nombre,
-      descripcion: descripcion || producto.descripcion,
-      precio: precio || producto.precio,
+      nombre: nombre ?? producto.nombre,
+      descripcion: descripcion ?? producto.descripcion,
+      precio: precio ?? producto.precio,
       oferta: oferta !== undefined ? oferta : producto.oferta,
-      descuento: descuento || producto.descuento,
+      descuento: descuento ?? producto.descuento,
       esPersonalizable:
         esPersonalizable !== undefined
           ? esPersonalizable
           : producto.esPersonalizable,
-      idCategoria: idCategoria || producto.idCategoria,
-      imagen: imagenPrincipal,
+      idCategoria: idCategoria ?? producto.idCategoria,
       imagenes: nuevasImagenes,
+      imagenPrincipal: principal,
     });
 
     res.json({
       success: true,
       data: producto,
-      message: 'Producto actualizado exitosamente',
+      message: 'Producto actualizado',
     });
   } catch (err) {
-    console.error('Error en updateProducto:', err);
-    res.status(500).json({
-      success: false,
-      error: 'Error interno del servidor',
-      message: 'No se pudo actualizar el producto',
-    });
+    console.error(err);
+    res
+      .status(500)
+      .json({ success: false, message: 'Error al actualizar producto' });
   }
 };
 
