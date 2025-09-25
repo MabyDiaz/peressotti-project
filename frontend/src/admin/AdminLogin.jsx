@@ -18,7 +18,7 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await api.post('/auth/admin/login', formData);
+      const res = await api.post('/auth/loginAdmin', formData);
 
       if (res.data.success) {
         const { accessToken, refreshToken, usuario } = res.data.data;
@@ -39,7 +39,7 @@ export default function AdminLogin() {
 
         toast.success(res.data.message || 'Inicio de sesión exitoso');
 
-        navigate('/admin'); // Redirige al panel de admin
+        navigate('/admin'); 
       } else {
         toast.error('Credenciales incorrectas');
       }

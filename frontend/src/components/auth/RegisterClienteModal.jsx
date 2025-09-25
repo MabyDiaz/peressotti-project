@@ -19,7 +19,7 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post('/auth/clientes/register', formData);
+      const res = await api.post('/auth/register', formData);
       toast.success(res.data.message || '¡Registro exitoso!');
       setFormData({
         nombre: '',
@@ -28,10 +28,9 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
         email: '',
         contrasena: '',
       });
-      setTimeout(() => {
-        onClose();
-        onSwitchToLogin();
-      }, 1000);
+
+      onClose();
+      onSwitchToLogin();
     } catch (error) {
       console.log(
         'Error registro cliente:',

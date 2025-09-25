@@ -16,18 +16,14 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post('/auth/clientes/login', formData);
+      const res = await api.post('/auth/loginCliente', formData);
       console.log('Resultado del login:', res.data);
-      // Guardar tokens
-      localStorage.setItem('accessToken', res.data.data.accessToken);
-      localStorage.setItem('refreshToken', res.data.data.refreshToken);
 
       //toast.success('¡Inicio de sesión exitoso!');
       toast(res.data.message || 'Login exitoso');
       setFormData({ email: '', contrasena: '' });
-      setTimeout(() => {
-        onClose();
-      }, 1000);
+
+      onClose();
     } catch (error) {
       console.log('Error login:', error.response?.data || error.message);
       toast(error.response?.data?.message || 'Error desconocido');
