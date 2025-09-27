@@ -565,7 +565,7 @@ const DetalleProducto = () => {
           {/* Imagen */}
           <div className='bg-white rounded-lg shadow-md overflow-hidden'>
             <img
-              src={producto.imagen || '/placeholder.svg'}
+              src={producto.imagenPrincipal || '/placeholder.svg'}
               alt={producto.nombre}
               className='w-full h-96 object-cover'
             />

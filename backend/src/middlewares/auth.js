@@ -13,7 +13,7 @@ export const protect = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Guardar en req.user lo mínimo
-    req.user = {
+    req.usuario = {
       id: decoded.id,
       kind: decoded.kind,
       roles: decoded.roles || ['CLIENTE'], // si no tiene roles explícitos
@@ -33,9 +33,9 @@ export const protect = (req, res, next) => {
 // Middleware para autorizar según rol
 export const authorize = (...rolesPermitidos) => {
   return (req, res, next) => {
-    const userRoles = Array.isArray(req.user.roles)
-      ? req.user.roles
-      : [req.user.roles];
+    const userRoles = Array.isArray(req.usuario.roles)
+      ? req.usuario.roles
+      : [req.usuario.roles];
 
     if (!userRoles.some((r) => rolesPermitidos.includes(r))) {
       return res.status(403).json({

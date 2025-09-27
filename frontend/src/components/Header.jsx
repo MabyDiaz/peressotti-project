@@ -22,8 +22,10 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import logo from '../assets/img/imprentaPeressotti_Logo.png';
-import avatarImg from '../assets/img/avatar.jpg';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LoginModal from './auth/LoginModal.jsx';
+import LogoutIcon from '@mui/icons-material/Logout';
+
 import RegisterClienteModal from './auth/RegisterClienteModal.jsx';
 import Carrito from './Carrito.jsx';
 
@@ -261,26 +263,49 @@ const Header = () => {
             </IconButton>
 
             {user ? (
-              <Typography
-                variant='body2'
-                sx={{
-                  color: 'white',
-                  mr: 1,
-                  display: { xs: 'none', md: 'block' },
-                }}>
-                Hola, {user.nombre}
-              </Typography>
-            ) : null}
-            <Tooltip title='Cuenta'>
-              <IconButton
-                onClick={handleOpenUserMenu}
-                sx={{ p: 0 }}>
-                <Avatar
-                  alt='Usuario'
-                  src={avatarImg}
-                />
-              </IconButton>
-            </Tooltip>
+              <Box className='flex items-center gap-2'>
+                <Typography
+                  variant='body2'
+                  sx={{
+                    backgroundColor: '#dc2626',
+                    color: 'white',
+                    py: 1.1,
+                    px: 2,
+                    borderRadius: 1,
+                    display: { xs: 'none', md: 'block' },
+                  }}>
+                  Hola, {user.nombre} {user.apellido}
+                </Typography>
+                <IconButton
+                  onClick={handleLogout}
+                  sx={{
+                    color: 'white',
+                    backgroundColor: 'transparent',
+                    '&:hover': { backgroundColor: '#dc2626', color: 'white' },
+                    borderRadius: '6px',
+                    padding: '8px',
+                  }}>
+                  <LogoutIcon />
+                </IconButton>
+              </Box>
+            ) : (
+              <Tooltip title='Cuenta'>
+                <IconButton
+                  onClick={handleOpenUserMenu}
+                  sx={{ p: 0 }}>
+                  <Avatar>
+                    <AccountCircleIcon
+                      sx={{
+                        fontSize: 44,
+                        bgcolor: '#1F2937',
+                        color: '#fff',
+                        '&:hover': { color: '#dc2626', bgcolor: '#fff' },
+                      }}
+                    />
+                  </Avatar>
+                </IconButton>
+              </Tooltip>
+            )}
 
             {/* Menú usuario */}
             <Menu
@@ -325,7 +350,7 @@ const Header = () => {
                   <Typography>Cerrar Sesión</Typography>
                 </MenuItem>
               ) : (
-                <>
+                <Box>
                   <MenuItem
                     onClick={() => {
                       setShowLogin(true);
@@ -360,7 +385,7 @@ const Header = () => {
                     }}>
                     <Typography>Registrarse</Typography>
                   </MenuItem>
-                </>
+                </Box>
               )}
             </Menu>
           </Box>
@@ -391,7 +416,7 @@ const Header = () => {
           {pages.map((page) => (
             <Box key={page.name}>
               {page.hasDropdown ? (
-                <>
+                <Box>
                   <MenuItem
                     onClick={handleOpenProductosMenuMobile}
                     sx={{
@@ -463,7 +488,7 @@ const Header = () => {
                       </MenuItem>
                     ))}
                   </Menu>
-                </>
+                </Box>
               ) : (
                 <MenuItem
                   component={NavLink}

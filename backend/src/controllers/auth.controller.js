@@ -101,7 +101,16 @@ export const loginCliente = async (req, res, next) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.json({ success: true, message: 'Login exitoso' });
+    return res.json({
+      success: true,
+      message: 'Login exitoso',
+      data: {
+        id: cliente.id,
+        nombre: cliente.nombre,
+        apellido: cliente.apellido,
+        email: cliente.email,
+      },
+    });
   } catch (err) {
     next(err);
   }
@@ -139,7 +148,17 @@ export const loginAdmin = async (req, res, next) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.json({ success: true, message: 'Login exitoso' });
+    return res.json({
+      success: true,
+      message: 'Login exitoso',
+      data: {
+        id: admin.id,
+        nombre: admin.nombre,
+        apellido: admin.apellido,
+        email: admin.email,
+        roles: roles,
+      },
+    });
   } catch (err) {
     next(err);
   }

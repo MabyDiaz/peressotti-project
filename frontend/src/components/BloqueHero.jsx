@@ -12,13 +12,7 @@ const BloqueHero = () => {
           direction={{ xs: 'column-reverse', sm: 'row' }}
           alignItems='center'
           justifyContent='center'>
-          <Grid
-            item
-            xs={12}
-            md={4}
-            sx={{
-              mr: { md: 4 },
-            }}>
+          <Grid size={{ xs: 12, md: 4, sx: { mr: { md: 4 } } }}>
             <Box className='flex flex-col justify-center items-start h-full'>
               <Typography
                 variant='h4'
@@ -91,12 +85,7 @@ const BloqueHero = () => {
             </Box>
           </Grid>
 
-          <Grid
-            item
-            xs={1}
-            sm={1}
-            md={3}
-          />
+          <Grid size={{ xs: 1, sm: 1, md: 3 }} />
 
           <Grid
             item

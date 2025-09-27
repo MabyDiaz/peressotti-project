@@ -1,4 +1,3 @@
-import api from '../../api/axios.js';
 import { useState } from 'react';
 import { FaUser, FaLock } from 'react-icons/fa6';
 import { toast } from 'react-toastify';
@@ -16,27 +15,40 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const res = await login(formData, '/auth/loginCliente');
+  //     console.log('Resultado del login:', res.data);
+
+  //     if (res) {
+  //       setFormData({ email: '', contrasena: '' });
+  //       onClose();
+  //     }
+
+  //     toast.success('¡Inicio de sesión exitoso!');
+
+  //     setFormData({ email: '', contrasena: '' });
+
+  //     onClose();
+  //   } catch (error) {
+  //     console.log('Error login:', error.response?.data || error.message);
+  //     toast(error.response?.data?.message || 'Error desconocido');
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post('/auth/loginCliente', formData);
-      console.log('Resultado del login:', res.data);
+      const success = await login(formData, '/auth/loginCliente');
 
-      // Obtener los datos del usuario logueado
-      const perfilRes = await api.get('/auth/perfil');
-      if (perfilRes.data.success) {
-        login(perfilRes.data.data);
-        console.log('Usuario enviado al contexto:', perfilRes.data.data);
+      if (success) {
+        setFormData({ email: '', contrasena: '' });
+        onClose();
       }
-
-      //toast.success('¡Inicio de sesión exitoso!');
-      toast(res.data.message || 'Login exitoso');
-      setFormData({ email: '', contrasena: '' });
-
-      onClose();
     } catch (error) {
       console.log('Error login:', error.response?.data || error.message);
-      toast(error.response?.data?.message || 'Error desconocido');
+      toast.error(error.response?.data?.message || 'Error desconocido');
     }
   };
 

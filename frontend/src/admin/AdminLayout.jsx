@@ -1,6 +1,5 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.js';
-
 import {
   FaHome,
   FaUsers,
@@ -32,26 +31,17 @@ export default function AdminLayout() {
           </h2>
         </div>
 
-        <div className='p-4'>
-          <h1 className='text-lg font-bold mb-2 uppercase'>
-            Imprenta Peressotti
-          </h1>
-          <h2 className='text-sm font-semibold text-gray-300'>
-            Panel de Administración
-          </h2>
-
-          {/* 👇 Saludo personalizado */}
-          {loading ? (
-            <p className='text-xs text-gray-400 italic'>Cargando...</p>
-          ) : user ? (
-            <p className='text-xs text-white mt-2'>
-              Hola,{' '}
-              <strong>
-                {user.nombre} {user.apellido}
-              </strong>
-            </p>
-          ) : null}
-        </div>
+        {/* 👇 Saludo personalizado */}
+        {loading ? (
+          <p className='text-xs text-gray-400 italic'>Cargando...</p>
+        ) : user ? (
+          <p className='text-xs text-white mt-2'>
+            Hola,{' '}
+            <strong>
+             {user?.nombre} {user?.apellido}
+            </strong>
+          </p>
+        ) : null}
 
         <nav className='flex flex-col gap-3 flex-1 p-4 text-sm'>
           {/* Todos los roles ven dashboard */}

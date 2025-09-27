@@ -22,7 +22,7 @@ export default function AdminLogin() {
 
       if (res.data.success) {
         // Extraer el usuario desde res.data.data
-        const { usuario } = res.data.data;
+        const usuario = res.data.data;
 
         // Solo guardar info básica (sin tokens)
         const userData = {

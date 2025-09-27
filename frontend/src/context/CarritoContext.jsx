@@ -20,14 +20,14 @@ export const CarritoProvider = ({ children }) => {
   const eliminarProducto = (id) =>
     setCarrito((prev) => prev.filter((item) => item.id !== id));
 
-  const incrementarCantidad = (id) =>
+  const aumentarCantidad = (id) =>
     setCarrito((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, cantidad: item.cantidad + 1 } : item
       )
     );
 
-  const decrementarCantidad = (id) =>
+  const disminuirCantidad = (id) =>
     setCarrito((prev) =>
       prev.map((item) =>
         item.id === id
@@ -53,8 +53,8 @@ export const CarritoProvider = ({ children }) => {
         agregarProducto,
         eliminarProducto,
         vaciarCarrito,
-        incrementarCantidad,
-        decrementarCantidad,
+        aumentarCantidad,
+        disminuirCantidad,
         cantidadTotal,
         totalCarrito,
       }}>
