@@ -426,7 +426,12 @@ const DetalleProducto = () => {
     const precioFinal = obtenerPrecioFinal();
     const total = precioFinal * cantidad;
     agregarProducto(
-      { id: producto.id, nombre: producto.nombre, precio: precioFinal },
+      {
+        id: producto.id,
+        nombre: producto.nombre,
+        precio: precioFinal,
+        imagenPrincipal: producto.imagenPrincipal,
+      },
       cantidad
     );
     setMensajeCarrito(

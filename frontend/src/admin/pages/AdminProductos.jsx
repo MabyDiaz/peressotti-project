@@ -513,7 +513,7 @@ export default function AdminProductos() {
                                 prev.imagenPrincipalIndex > idx
                               ) {
                                 newPrincipalIndex =
-                                  prev.imagenPrincipalIndex - 1; // shift index
+                                  prev.imagenPrincipalIndex - 1;
                               }
                               return {
                                 ...prev,
@@ -737,14 +737,15 @@ export default function AdminProductos() {
                   if (confirmType === 'eliminar') {
                     try {
                       await api.delete(`/productos/${selectedProducto.id}`);
-                      fetchProductos();
+                      await fetchProductos(pagination.currentPage);
                       setShowConfirm(false);
                       setSelectedProducto(null);
+                      toast.success('Producto desactivado exitosamente');
                     } catch (error) {
                       console.error(error);
-                      alert(
+                      toast.error(
                         error.response?.data?.message ||
-                          'Error al eliminar producto'
+                          'Error al desactivar producto'
                       );
                     }
                   } else if (confirmType === 'editar') {
@@ -753,12 +754,12 @@ export default function AdminProductos() {
                         `/productos/${selectedProducto.id}`,
                         formData
                       );
-                      fetchProductos();
+                      await fetchProductos(pagination.currentPage);
                       setShowConfirm(false);
                       closeForm();
                     } catch (error) {
                       console.error(error);
-                      alert(
+                      toast.error(
                         error.response?.data?.message ||
                           'Error al actualizar producto'
                       );
