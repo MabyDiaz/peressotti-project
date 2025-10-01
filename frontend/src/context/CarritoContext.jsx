@@ -1,20 +1,35 @@
 import { useState } from 'react';
 import { CarritoContext } from '../hooks/useCarrito.js';
+import { useCupon } from '../hooks/useCupon.js';
 
 export const CarritoProvider = ({ children }) => {
   const [carrito, setCarrito] = useState([]);
+  const { cupon } = useCupon(); // 👉 traemos el cupón actual
 
-  const agregarProducto = (producto, cantidad) => {
-    setCarrito((prevCarrito) => {
-      const index = prevCarrito.findIndex((item) => item.id === producto.id);
-      if (index !== -1) {
-        const nuevoCarrito = [...prevCarrito];
-        nuevoCarrito[index].cantidad += cantidad;
-        return nuevoCarrito;
-      } else {
-        return [...prevCarrito, { ...producto, cantidad }];
-      }
-    });
+  const agregarProducto = (producto) => {
+    const existe = carrito.find((item) => item.id === producto.id);
+
+    if (existe) {
+      setCarrito(
+        carrito.map((item) =>
+          item.id === producto.id
+            ? { ...item, cantidad: item.cantidad + 1 }
+            : item
+        )
+      );
+    } else {
+      setCarrito([
+        ...carrito,
+        {
+          id: producto.id,
+          nombre: producto.nombre,
+          precio: producto.precio,
+          cantidad: 1,
+          oferta: producto.oferta,
+          descuento: producto.descuento,
+        },
+      ]);
+    }
   };
 
   const eliminarProducto = (id) =>
@@ -36,11 +51,28 @@ export const CarritoProvider = ({ children }) => {
       )
     );
 
+  // Cálculo de totales
   const cantidadTotal = carrito.reduce((acc, item) => acc + item.cantidad, 0);
-  const totalCarrito = carrito.reduce(
+
+  const subtotal = carrito.reduce(
     (acc, item) => acc + item.precio * item.cantidad,
     0
   );
+
+  const descuentoPorCupon = cupon?.porcentajeDescuento
+    ? carrito.reduce((acc, item) => {
+        // aplicar cupón solo a productos SIN oferta y SIN descuento
+        if (!item.oferta && (!item.descuento || item.descuento === 0)) {
+          return (
+            acc +
+            (item.precio * item.cantidad * cupon.porcentajeDescuento) / 100
+          );
+        }
+        return acc;
+      }, 0)
+    : 0;
+
+  const totalCarrito = subtotal - descuentoPorCupon;
 
   const vaciarCarrito = () => {
     setCarrito([]);
@@ -56,6 +88,8 @@ export const CarritoProvider = ({ children }) => {
         aumentarCantidad,
         disminuirCantidad,
         cantidadTotal,
+        subtotal,
+        descuentoPorCupon,
         totalCarrito,
       }}>
       {children}

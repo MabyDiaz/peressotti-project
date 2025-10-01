@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
-import CuponProvider from './context/CuponContext.jsx';
+
 import CssBaseline from '@mui/material/CssBaseline';
 import ProtectedRoute from './admin/components/ProtectedRoute';
 import Header from './components/Header.jsx';
@@ -34,96 +34,94 @@ function App() {
 
   return (
     <>
-      <CuponProvider>
-        {!isAdminRoute && <Header key={user ? 'logged-in' : 'guest'} />}
-        <CssBaseline />
+      {!isAdminRoute && <Header key={user ? 'logged-in' : 'guest'} />}
+      <CssBaseline />
 
-        <Routes>
-          <Route
-            path='/'
-            element={<Home />}
-          />
-
-          <Route
-            path='/productos'
-            element={<Productos />}
-          />
-
-          <Route
-            path='/nosotros'
-            element={<Nosotros />}
-          />
-
-          <Route
-            path='/contacto'
-            element={<Contacto />}
-          />
-
-          <Route
-            path='/categoria/:id'
-            element={<DetalleCategoria />}
-          />
-          <Route
-            path='/producto/:id'
-            element={<DetalleProducto />}
-          />
-
-          {/* Admin */}
-          {/* Login admin */}
-          <Route
-            path='/admin/loginAdmin'
-            element={<AdminLogin />}
-          />
-
-          {/* Panel admin */}
-          <Route
-            element={<ProtectedRoute allowedRoles={['ADMIN', 'DISENADOR']} />}>
-            <Route
-              path='/admin'
-              element={<AdminLayout />}>
-              <Route
-                index
-                element={<AdminDashboard />}
-              />
-              {/* ADMIN */}
-              <Route
-                path='clientes'
-                element={<AdminClientes />}
-              />
-              <Route
-                path='productos'
-                element={<AdminProductos />}
-              />
-              <Route
-                path='categorias'
-                element={<AdminCategorias />}
-              />
-              <Route
-                path='cupones'
-                element={<AdminCupones />}
-              />
-              <Route
-                path='pedidos'
-                element={<AdminPedidos />}
-              />
-              <Route
-                path='administradores'
-                element={<AdminAdministradores />}
-              />
-              <Route
-                path='roles'
-                element={<AdminRoles />}
-              />
-            </Route>
-          </Route>
-        </Routes>
-
-        <ToastContainer
-          position='bottom-left'
-          autoClose={3000}
+      <Routes>
+        <Route
+          path='/'
+          element={<Home />}
         />
-        {!isAdminRoute && <Footer />}
-      </CuponProvider>
+
+        <Route
+          path='/productos'
+          element={<Productos />}
+        />
+
+        <Route
+          path='/nosotros'
+          element={<Nosotros />}
+        />
+
+        <Route
+          path='/contacto'
+          element={<Contacto />}
+        />
+
+        <Route
+          path='/categoria/:id'
+          element={<DetalleCategoria />}
+        />
+        <Route
+          path='/producto/:id'
+          element={<DetalleProducto />}
+        />
+
+        {/* Admin */}
+        {/* Login admin */}
+        <Route
+          path='/admin/loginAdmin'
+          element={<AdminLogin />}
+        />
+
+        {/* Panel admin */}
+        <Route
+          element={<ProtectedRoute allowedRoles={['ADMIN', 'DISENADOR']} />}>
+          <Route
+            path='/admin'
+            element={<AdminLayout />}>
+            <Route
+              index
+              element={<AdminDashboard />}
+            />
+            {/* ADMIN */}
+            <Route
+              path='clientes'
+              element={<AdminClientes />}
+            />
+            <Route
+              path='productos'
+              element={<AdminProductos />}
+            />
+            <Route
+              path='categorias'
+              element={<AdminCategorias />}
+            />
+            <Route
+              path='cupones'
+              element={<AdminCupones />}
+            />
+            <Route
+              path='pedidos'
+              element={<AdminPedidos />}
+            />
+            <Route
+              path='administradores'
+              element={<AdminAdministradores />}
+            />
+            <Route
+              path='roles'
+              element={<AdminRoles />}
+            />
+          </Route>
+        </Route>
+      </Routes>
+
+      <ToastContainer
+        position='bottom-left'
+        autoClose={3000}
+      />
+      {!isAdminRoute && <Footer />}
     </>
   );
 }

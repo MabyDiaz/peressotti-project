@@ -471,6 +471,7 @@ const DetalleProducto = () => {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchProducto = async () => {
       try {
         setLoading(true);

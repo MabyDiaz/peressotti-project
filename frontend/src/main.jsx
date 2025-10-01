@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import CuponProvider from './context/CuponContext.jsx';
 import { CarritoProvider } from './context/CarritoContext.jsx';
 import { AuthProvider } from './context/AuthContext';
 import { BrowserRouter } from 'react-router-dom';
@@ -10,9 +11,11 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
       <BrowserRouter>
-        <CarritoProvider>
-          <App />
-        </CarritoProvider>
+        <CuponProvider>
+          <CarritoProvider>
+            <App />
+          </CarritoProvider>
+        </CuponProvider>
       </BrowserRouter>
     </AuthProvider>
   </StrictMode>

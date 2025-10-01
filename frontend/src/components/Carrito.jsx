@@ -26,6 +26,8 @@ import { useCarrito } from '../hooks/useCarrito';
 import { useCupon } from '../hooks/useCupon';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { toast } from 'react-toastify';
 import ModalDetallePersonalizacion from './ModalDetallePersonalizacion';
 
 const Carrito = () => {
@@ -56,11 +58,19 @@ const Carrito = () => {
 // Componente interno: el Drawer que se desliza
 const CarritoDrawer = ({ open, onClose }) => {
   const navigate = useNavigate();
-  const { carrito, cantidadTotal, totalCarrito, vaciarCarrito } = useCarrito();
-  const { eliminarProducto, aumentarCantidad, disminuirCantidad } =
-    useCarrito();
+  const { user } = useAuth();
+  const {
+    carrito,
+    cantidadTotal,
+    subtotal,
+    descuentoPorCupon,
+    totalCarrito,
+    vaciarCarrito,
+    eliminarProducto,
+    aumentarCantidad,
+    disminuirCantidad,
+  } = useCarrito();
   const { cupon, aplicarCupon } = useCupon();
-
   const [codigo, setCodigo] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [modalData, setModalData] = useState(null);
@@ -73,21 +83,22 @@ const CarritoDrawer = ({ open, onClose }) => {
     }
   }, [open]);
 
-  const obtenerDescuento = () =>
-    cupon?.porcentajeDescuento > 0
-      ? (totalCarrito * cupon.porcentajeDescuento) / 100
-      : 0;
-
-  const totalConDescuento = totalCarrito - obtenerDescuento();
-
   const handleAplicarCupon = () => {
+    if (!user) {
+      toast.error('Debes iniciar sesión para aplicar un cupón');
+      navigate('/loginCliente');
+      return;
+    }
+
     if (!codigo.trim()) return;
+
     aplicarCupon(codigo)
       .then(() => {
-        setMensaje('Cupón aplicado con éxito');
+        toast.success('Cupón aplicado con éxito');
         setCodigo('');
       })
-      .catch(() => setMensaje('Cupón inválido o expirado'));
+      .catch(() => toast.error('Cupón inválido o expirado'));
+
     setTimeout(() => setMensaje(''), 3000);
   };
 
@@ -105,7 +116,7 @@ const CarritoDrawer = ({ open, onClose }) => {
           onClose={onClose}
           PaperProps={{
             sx: {
-              width: { xs: '100%', sm: '750px' },
+              width: { xs: '100%', sm: '70%' },
               p: 2,
               backgroundColor: '#ffffff',
               boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
@@ -120,7 +131,6 @@ const CarritoDrawer = ({ open, onClose }) => {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              mb: 1,
               backgroundColor: '#DC2626',
               borderRadius: '8px',
             }}>
@@ -141,14 +151,19 @@ const CarritoDrawer = ({ open, onClose }) => {
           <Divider sx={{ mb: 3 }} />
 
           {/* Contenido en dos columnas */}
-          <Box sx={{ display: 'flex', gap: 1 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', md: 'row' },
+              gap: 1,
+            }}>
             {/* Columna izquierda: productos */}
             <Box
               sx={{
                 flex: 2,
                 flexDirection: 'column',
-                maxHeight: '100vh',
-                overflowY: 'auto',
+                maxHeight: { xs: 'auto', md: '100vh' }, // que no se corte en móviles
+                overflowY: { md: 'auto' }, // scroll solo en desktop
               }}>
               <List sx={{ padding: '0px' }}>
                 {carrito.map((item) => (
@@ -316,7 +331,8 @@ const CarritoDrawer = ({ open, onClose }) => {
                 backgroundColor: '#f9fafb',
                 display: 'flex',
                 flexDirection: 'column',
-                height: '100vh',
+                height: { xs: 'auto', md: '100vh' },
+                mt: { xs: 2, md: 0 },
               }}>
               <Box sx={{ overflowY: 'auto', flexGrow: 1, mb: 2 }}>
                 <Typography
@@ -325,6 +341,54 @@ const CarritoDrawer = ({ open, onClose }) => {
                   gutterBottom>
                   Resumen de la compra
                 </Typography>
+
+                {/* Encabezado de columnas */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    mb: 1,
+                    px: 1,
+                    py: 1,
+                    backgroundColor: '#f3f4f6', // gris clarito
+                    borderRadius: '6px',
+                    borderBottom: '2px solid #e5e7eb', // línea separadora
+                  }}>
+                  <Typography
+                    sx={{
+                      flex: 1,
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold',
+                      textAlign: 'left',
+                      textTransform: 'uppercase',
+                      color: '#374151',
+                    }}>
+                    Cant.
+                  </Typography>
+                  <Typography
+                    sx={{
+                      flex: 3,
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold',
+                      textAlign: 'left',
+                      textTransform: 'uppercase',
+                      color: '#374151',
+                    }}>
+                    Nombre
+                  </Typography>
+                  <Typography
+                    sx={{
+                      flex: 1,
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold',
+                      textAlign: 'center',
+                      textTransform: 'uppercase',
+                      color: '#374151',
+                    }}>
+                    Precio
+                  </Typography>
+                </Box>
+
                 {carrito.map((item) => (
                   <Box
                     key={item.id}
@@ -332,12 +396,30 @@ const CarritoDrawer = ({ open, onClose }) => {
                       display: 'flex',
                       justifyContent: 'space-between',
                       mb: 1,
+                      px: 1,
+                      alignItems: 'center',
                     }}>
-                    <Typography variant='body2'>{item.nombre}</Typography>
+                    {/* Columna Cantidad */}
                     <Typography
-                      variant='body2'
-                      fontWeight='bold'>
-                      ${item.precio.toFixed(2)}
+                      sx={{ flex: 1, fontSize: '0.9rem', textAlign: 'left' }}>
+                      {item.cantidad}
+                    </Typography>
+
+                    {/* Columna Nombre */}
+                    <Typography
+                      sx={{ flex: 3, fontSize: '0.9rem', textAlign: 'left' }}>
+                      {item.nombre}
+                    </Typography>
+
+                    {/* Columna Precio Total */}
+                    <Typography
+                      sx={{
+                        flex: 1,
+                        textAlign: 'right',
+                        fontSize: '0.9rem',
+                        fontWeight: 'bold',
+                      }}>
+                      ${(item.precio * item.cantidad).toFixed(2)}
                     </Typography>
                   </Box>
                 ))}
@@ -349,9 +431,24 @@ const CarritoDrawer = ({ open, onClose }) => {
                     display: 'flex',
                     justifyContent: 'space-between',
                     mb: 1,
+                    px: 1,
                   }}>
-                  <Typography>Subtotal:</Typography>
-                  <Typography>${totalCarrito.toFixed(2)}</Typography>
+                  <Typography
+                    sx={{
+                      fontSize: '0.95rem',
+                      color: '#DC2626',
+                      fontWeight: 'bold',
+                    }}>
+                    Subtotal:
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: '0.95rem',
+                      color: '#DC2626',
+                      fontWeight: 'bold',
+                    }}>
+                    ${subtotal.toFixed(2)}
+                  </Typography>
                 </Box>
               </Box>
 
@@ -359,18 +456,17 @@ const CarritoDrawer = ({ open, onClose }) => {
               {cupon && cupon.porcentajeDescuento > 0 ? (
                 <Box
                   sx={{
+                    mb: 2,
                     display: 'flex',
-                    justifyContent: 'space-between',
-                    mb: 1,
-                    p: 1,
-                    backgroundColor: '#dcfce7',
-                    borderRadius: '4px',
+                    gap: 1,
+                    flexDirection: { xs: 'row', sm: 'row' },
+                    alignItems: 'center',
                   }}>
                   <Typography color='success.main'>
                     Descuento ({cupon.codigo}):
                   </Typography>
                   <Typography color='success.main'>
-                    -${obtenerDescuento().toFixed(2)}
+                    -${descuentoPorCupon().toFixed(2)}
                   </Typography>
                 </Box>
               ) : (
@@ -380,13 +476,27 @@ const CarritoDrawer = ({ open, onClose }) => {
                     placeholder='Código de cupón'
                     value={codigo}
                     onChange={(e) => setCodigo(e.target.value)}
-                    sx={{ flexGrow: 1, mr: 1 }}
+                    sx={{
+                      flex: 1,
+                      '& .MuiInputBase-root': {
+                        height: { xs: 36, sm: 40 },
+                      },
+                      '& input::placeholder': {
+                        fontSize: { xs: '0.75rem', sm: '0.85rem' },
+                      },
+                    }}
                   />
                   <Button
                     onClick={handleAplicarCupon}
                     variant='contained'
                     size='small'
                     sx={{
+                      whiteSpace: 'nowrap',
+                      height: { xs: 36, sm: 40 },
+                      flexGrow: 0,
+                      minWidth: { xs: 80, sm: 100 },
+                      px: { xs: 1, sm: 2 },
+                      fontSize: { xs: '0.75rem', sm: '0.85rem' },
                       backgroundColor: '#DC2626',
                       '&:hover': { backgroundColor: '#B91C1C' },
                     }}>
@@ -420,7 +530,7 @@ const CarritoDrawer = ({ open, onClose }) => {
                   variant='h6'
                   fontWeight='bold'
                   color='#DC2626'>
-                  ${totalConDescuento.toFixed(2)}
+                  ${totalCarrito.toFixed(2)}
                 </Typography>
               </Box>
 
@@ -431,6 +541,10 @@ const CarritoDrawer = ({ open, onClose }) => {
                   onClick={onClose}
                   variant='outlined'
                   sx={{
+                    whiteSpace: 'nowrap',
+                    fontSize: { xs: '0.75rem', sm: '0.9rem' },
+                    px: { xs: 1, sm: 2 },
+                    py: { xs: 0.5, sm: 1 },
                     borderColor: '#DC2626',
                     color: '#DC2626',
                     fontWeight: 'bold',
@@ -447,6 +561,10 @@ const CarritoDrawer = ({ open, onClose }) => {
                   variant='contained'
                   onClick={handleFinalizarCompra}
                   sx={{
+                    whiteSpace: 'nowrap',
+                    fontSize: { xs: '0.75rem', sm: '0.9rem' },
+                    px: { xs: 1, sm: 2 },
+                    py: { xs: 0.5, sm: 1 },
                     backgroundColor: '#DC2626',
                     '&:hover': { backgroundColor: '#B91C1C' },
                     fontWeight: 'bold',
