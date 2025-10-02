@@ -77,6 +77,7 @@ const FormPersonalizacion = ({ open, onClose, product, onSubmit }) => {
 
     try {
       await onSubmit(formData);
+      
       setFormData({
         nombreCliente: '',
         telefonoCliente: '',

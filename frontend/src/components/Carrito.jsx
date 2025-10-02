@@ -108,6 +108,7 @@ const CarritoDrawer = ({ open, onClose }) => {
     // vaciarCarrito();
   };
 
+  
   return (
     <>
       {carrito && carrito.length > 0 ? (
@@ -282,6 +283,9 @@ const CarritoDrawer = ({ open, onClose }) => {
                                 setModalData(item.customData);
                                 setModalOpen(true);
                               }}
+
+
+                              
                               sx={{
                                 textTransform: 'none',
                                 mt: 0.5,

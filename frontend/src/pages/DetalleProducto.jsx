@@ -51,8 +51,7 @@ const DetalleProducto = () => {
         precio: precioFinal,
         imagenPrincipal: producto.imagenPrincipal,
       },
-
-      
+      null,
       cantidad
     );
     setMensajeCarrito(
@@ -349,12 +348,40 @@ const DetalleProducto = () => {
         </div>
 
         {/* Modal de personalización */}
-        <FormPersonalizacion
+        {/* <FormPersonalizacion
           open={openModal}
           onClose={() => setOpenModal(false)}
           product={producto}
           onSubmit={async (customData) => {
             agregarProducto({ ...producto, customData }, cantidad);
+            setOpenModal(false);
+            setMensajeCarrito(
+              `${cantidad} ${producto.nombre}(s) agregado(s) al carrito`
+            );
+            setTimeout(() => setMensajeCarrito(''), 4000);
+          }}
+        /> */}
+
+        <FormPersonalizacion
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          product={producto}
+          onSubmit={async (customData) => {
+            const precioFinal = obtenerPrecioFinal();
+
+            agregarProducto(
+              {
+                id: producto.id,
+                nombre: producto.nombre,
+                precio: precioFinal,
+                imagenPrincipal: producto.imagenPrincipal,
+                oferta: producto.oferta,
+                descuento: producto.descuento,
+              },
+              customData, // 👈 ahora sí lo pasás como segundo argumento
+              cantidad // 👈 tercer argumento
+            );
+
             setOpenModal(false);
             setMensajeCarrito(
               `${cantidad} ${producto.nombre}(s) agregado(s) al carrito`

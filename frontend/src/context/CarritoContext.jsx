@@ -35,6 +35,7 @@ export const CarritoProvider = ({ children }) => {
           imagenPrincipal: producto.imagenPrincipal,
           customData,
         },
+        
       ]);
     }
   };

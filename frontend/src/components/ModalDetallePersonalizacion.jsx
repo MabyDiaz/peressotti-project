@@ -1,4 +1,3 @@
-// Ver detalle en el Carrito
 import {
   Dialog,
   DialogTitle,
