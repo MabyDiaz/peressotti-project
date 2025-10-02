@@ -29,6 +29,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
 import ModalDetallePersonalizacion from './ModalDetallePersonalizacion';
+import { getImageUrl } from '../utils/getImageUrl.js';
 
 const Carrito = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -188,7 +189,7 @@ const CarritoDrawer = ({ open, onClose }) => {
                       }}>
                       <CardMedia
                         component='img'
-                        image={item.imagenPrincipal}
+                        image={getImageUrl(item.imagenPrincipal)}
                         alt={item.nombre}
                         sx={{
                           width: 50,
@@ -350,9 +351,9 @@ const CarritoDrawer = ({ open, onClose }) => {
                     mb: 1,
                     px: 1,
                     py: 1,
-                    backgroundColor: '#f3f4f6', // gris clarito
+                    backgroundColor: '#f3f4f6',
                     borderRadius: '6px',
-                    borderBottom: '2px solid #e5e7eb', // línea separadora
+                    borderBottom: '2px solid #e5e7eb',
                   }}>
                   <Typography
                     sx={{

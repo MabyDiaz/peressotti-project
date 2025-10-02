@@ -4,15 +4,20 @@ import { useCupon } from '../hooks/useCupon.js';
 
 export const CarritoProvider = ({ children }) => {
   const [carrito, setCarrito] = useState([]);
-  const { cupon } = useCupon(); // 👉 traemos el cupón actual
+  const { cupon } = useCupon();
 
-  const agregarProducto = (producto) => {
-    const existe = carrito.find((item) => item.id === producto.id);
+  const agregarProducto = (producto, customData = null) => {
+    const existe = carrito.find(
+      (item) =>
+        item.id === producto.id &&
+        JSON.stringify(item.customData) === JSON.stringify(customData)
+    );
 
     if (existe) {
       setCarrito(
         carrito.map((item) =>
-          item.id === producto.id
+          item.id === producto.id &&
+          JSON.stringify(item.customData) === JSON.stringify(customData)
             ? { ...item, cantidad: item.cantidad + 1 }
             : item
         )
@@ -27,6 +32,8 @@ export const CarritoProvider = ({ children }) => {
           cantidad: 1,
           oferta: producto.oferta,
           descuento: producto.descuento,
+          imagenPrincipal: producto.imagenPrincipal,
+          customData,
         },
       ]);
     }
