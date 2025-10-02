@@ -6,7 +6,7 @@ export const CarritoProvider = ({ children }) => {
   const [carrito, setCarrito] = useState([]);
   const { cupon } = useCupon();
 
-  const agregarProducto = (producto, customData = null) => {
+  const agregarProducto = (producto, customData, cantidad = 1) => {
     const existe = carrito.find(
       (item) =>
         item.id === producto.id &&
@@ -29,7 +29,7 @@ export const CarritoProvider = ({ children }) => {
           id: producto.id,
           nombre: producto.nombre,
           precio: producto.precio,
-          cantidad: 1,
+          cantidad,
           oferta: producto.oferta,
           descuento: producto.descuento,
           imagenPrincipal: producto.imagenPrincipal,

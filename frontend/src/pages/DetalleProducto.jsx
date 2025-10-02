@@ -51,6 +51,8 @@ const DetalleProducto = () => {
         precio: precioFinal,
         imagenPrincipal: producto.imagenPrincipal,
       },
+
+      
       cantidad
     );
     setMensajeCarrito(

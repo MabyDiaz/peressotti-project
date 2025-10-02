@@ -48,7 +48,7 @@ const ModalDetallePersonalizacion = ({ open, onClose, customData }) => {
             <Typography
               variant='subtitle2'
               fontWeight='bold'
-              color='#DC2626' // Rojo para el label
+              color='#DC2626' 
               gutterBottom>
               Fecha de personalización:
             </Typography>
