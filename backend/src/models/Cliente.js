@@ -53,6 +53,16 @@ const Cliente = sequelize.define(
       defaultValue: true,
     },
 
+    googleId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+    avatar: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
     idAdministrador: {
       type: DataTypes.INTEGER,
       references: {

@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaUser, FaLock } from 'react-icons/fa6';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../hooks/useAuth.js';
+import api from '../../api/axios.js';
 
 const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
   const [formData, setFormData] = useState({
@@ -9,39 +10,16 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
     contrasena: '',
   });
 
-  const { login } = useAuth();
+  const { login, setUser } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const res = await login(formData, '/auth/loginCliente');
-  //     console.log('Resultado del login:', res.data);
-
-  //     if (res) {
-  //       setFormData({ email: '', contrasena: '' });
-  //       onClose();
-  //     }
-
-  //     toast.success('¡Inicio de sesión exitoso!');
-
-  //     setFormData({ email: '', contrasena: '' });
-
-  //     onClose();
-  //   } catch (error) {
-  //     console.log('Error login:', error.response?.data || error.message);
-  //     toast(error.response?.data?.message || 'Error desconocido');
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const success = await login(formData, '/auth/loginCliente');
-
       if (success) {
         setFormData({ email: '', contrasena: '' });
         onClose();
@@ -51,6 +29,46 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
       toast.error(error.response?.data?.message || 'Error desconocido');
     }
   };
+
+  // === Google Sign-In ===
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.google) {
+      window.google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: async (response) => {
+          try {
+            // Enviar token al backend
+            await api.post(
+              '/auth/google',
+              { token: response.credential },
+              { withCredentials: true }
+            );
+
+            // Obtener perfil del backend
+            const perfil = await api.get('/auth/perfil', {
+              withCredentials: true,
+            });
+
+            // Actualizar contexto Auth si existe
+            if (setUser) {
+              setUser(perfil.data.data);
+            }
+
+            toast.success('¡Inicio de sesión con Google exitoso!');
+            onClose();
+          } catch (err) {
+            console.error('Error en login con Google:', err);
+            toast.error('Error al iniciar sesión con Google');
+          }
+        },
+      });
+
+      window.google.accounts.id.renderButton(
+        document.getElementById('googleSignInDiv'),
+        { theme: 'outline', size: 'large', width: '100%' }
+      );
+    }
+  }, [onClose, setUser]);
 
   if (!open) return null;
 
@@ -64,7 +82,7 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
           onSubmit={handleSubmit}
           className='flex flex-col gap-4'>
           {/* Email */}
-          <div className='row flex items-center px-3 py-2 gap-2 rounded-md bg-gray-100 shadow-sm border border-gray-300 focus:outline-none text-sm'>
+          <div className='row flex items-center px-3 py-2 gap-2 rounded-md bg-gray-100 shadow-sm border border-gray-300 text-sm'>
             <FaUser className='text-gray-600' />
             <input
               type='email'
@@ -73,11 +91,12 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
               value={formData.email}
               onChange={handleChange}
               required
-              className='flex-1 text-gray-700 border-none focus:outline-none focus:ring-0 text-sm placeholder-gray-400'
+              className='flex-1 text-gray-700 border-none focus:outline-none placeholder-gray-400'
             />
           </div>
+
           {/* Contraseña */}
-          <div className='row flex items-center px-3 py-2 gap-2 rounded-md bg-gray-100 shadow-sm border border-gray-300 focus:outline-none text-sm'>
+          <div className='row flex items-center px-3 py-2 gap-2 rounded-md bg-gray-100 shadow-sm border border-gray-300 text-sm'>
             <FaLock className='text-gray-600' />
             <input
               type='password'
@@ -86,7 +105,7 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
               value={formData.contrasena}
               onChange={handleChange}
               required
-              className='flex-1 text-gray-700 border-none focus:outline-none focus:ring-0 text-sm placeholder-gray-400'
+              className='flex-1 text-gray-700 border-none focus:outline-none placeholder-gray-400'
             />
           </div>
 
@@ -103,7 +122,13 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
               Cerrar
             </button>
           </div>
-          {/* Link para login */}
+
+          {/* Botón de Google */}
+          <div
+            id='googleSignInDiv'
+            className='mt-4'></div>
+
+          {/* Link para registro */}
           <div className='signup-link text-center text-gray-800 text-sm mt-2'>
             ¿No tenés cuenta?{' '}
             <a

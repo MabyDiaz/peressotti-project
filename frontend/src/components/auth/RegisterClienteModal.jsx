@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FaUser, FaEnvelope, FaPhone, FaLock } from 'react-icons/fa6';
 import api from '../../api/axios.js';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../hooks/useAuth.js';
 
 const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,8 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
     email: '',
     contrasena: '',
   });
+
+  const { saveUser } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,6 +42,45 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
       toast.error(error.response?.data?.message || 'Error desconocido');
     }
   };
+
+  // ------------------------------------------
+  // GOOGLE REGISTER
+  // ------------------------------------------
+  const handleGoogleResponse = useCallback(
+    async (response) => {
+      try {
+        const res = await api.post('/auth/google', {
+          token: response.credential,
+        });
+      
+
+        // actualizar el context
+        saveUser(res.data.data); // data devuelta por backend: usuario creado/logueado
+
+        toast.success('Registrado con Google correctamente');
+        onClose();
+      } catch (err) {
+        toast.error('Error registrando con Google');
+        console.error(err);
+      }
+    },
+    [saveUser, onClose]
+  );
+
+  useEffect(() => {
+    /* global google */
+    if (window.google && open) {
+      google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+      });
+
+      google.accounts.id.renderButton(
+        document.getElementById('googleRegisterDiv'),
+        { theme: 'outline', size: 'large', width: '100%' }
+      );
+    }
+  }, [open, handleGoogleResponse]);
 
   if (!open) return null;
 
@@ -136,6 +178,11 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
               Cerrar
             </button>
           </div>
+
+          {/* Botón Google */}
+          <div
+            id='googleRegisterDiv'
+            className='mt-4'></div>
 
           {/* Link para login */}
           <div className='signup-link text-center text-gray-800 text-sm mt-2'>

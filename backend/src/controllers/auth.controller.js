@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
 import { Cliente, Administrador, Rol } from '../models/index.js';
 
 const saltBcrypt = 10;
@@ -208,8 +209,8 @@ export const logout = (req, res) => {
 // PERFIL (datos del usuario logueado)
 export const perfil = async (req, res) => {
   try {
-    if (req.user.kind === 'CLIENTE') {
-      const cliente = await Cliente.findByPk(req.user.id, {
+    if (req.usuario.kind === 'CLIENTE') {
+      const cliente = await Cliente.findByPk(req.usuario.id, {
         attributes: ['id', 'nombre', 'apellido', 'email', 'telefono'],
       });
       if (!cliente)
@@ -220,8 +221,8 @@ export const perfil = async (req, res) => {
       return res.json({ success: true, data: cliente });
     }
 
-    if (req.user.kind === 'ADMIN') {
-      const admin = await Administrador.findByPk(req.user.id, {
+    if (req.usuario.kind === 'ADMIN') {
+      const admin = await Administrador.findByPk(req.usuario.id, {
         attributes: ['id', 'nombre', 'apellido', 'email'],
         include: { model: Rol, as: 'roles', attributes: ['codigo'] },
       });
@@ -241,5 +242,90 @@ export const perfil = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: 'Error al obtener perfil' });
+  }
+};
+
+// ================== LOGIN CON GOOGLE ==================
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+export const googleAuth = async (req, res, next) => {
+  try {
+    const { token } = req.body; // id_token que manda el frontend
+    if (!token) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Falta token de Google' });
+    }
+
+    // Validar token con Google
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+
+    const email = payload.email;
+    const googleId = payload.sub;
+    const nombre = payload.given_name || 'Usuario';
+    const apellido = payload.family_name || '';
+    const picture = payload.picture;
+
+    if (!email) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Google no devolvió email' });
+    }
+
+    // Buscar cliente
+    let cliente = await Cliente.findOne({ where: { email } });
+
+    if (!cliente) {
+      // Crear uno nuevo si no existe
+      cliente = await Cliente.create({
+        nombre,
+        apellido,
+        telefono: '',
+        email,
+        contrasena: `GOOGLE_${googleId}`, // valor dummy para no dejar null
+        googleId,
+        avatar: picture,
+      });
+    } else {
+      // Actualizar info si hace falta
+      await cliente.update({
+        googleId: cliente.googleId || googleId,
+        avatar: cliente.avatar || picture,
+      });
+    }
+
+    // Generar tokens
+    const tokens = generateTokens({ id: cliente.id, kind: 'CLIENTE' });
+
+    // Setear cookies
+    res.cookie('accessToken', tokens.accessToken, {
+      ...cookieOptions,
+      maxAge: 30 * 60 * 1000,
+    });
+    res.cookie('refreshToken', tokens.refreshToken, {
+      ...cookieOptions,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.json({
+      success: true,
+      message: 'Login con Google exitoso',
+      data: {
+        id: cliente.id,
+        nombre: cliente.nombre,
+        apellido: cliente.apellido,
+        email: cliente.email,
+        avatar: cliente.avatar,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Error en login con Google' });
   }
 };

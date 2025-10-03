@@ -6,6 +6,7 @@ import {
   logout,
   registerCliente,
   perfil,
+  googleAuth,
 } from '../controllers/auth.controller.js';
 import { protect } from '../middlewares/auth.js';
 
@@ -18,5 +19,7 @@ router.post('/refresh', refreshToken);
 router.post('/logout', logout);
 
 router.get('/perfil', protect, perfil);
+
+router.post('/google', googleAuth);
 
 export default router;
