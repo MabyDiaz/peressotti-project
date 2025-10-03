@@ -29,6 +29,6 @@ router.use('/detallecarritos', detalleCarritoRoutes);
 router.use('/detallepedidos', detallePedidoRoutes);
 router.use('/cupones', cuponDescuentoRoutes);
 router.use('/dashboard', dashboardRoutes);
-router.use('./chat', chatbotRoutes);
+router.use('/chat', chatbotRoutes);
 
 export default router;
