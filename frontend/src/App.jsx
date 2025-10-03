@@ -12,6 +12,7 @@ import DetalleCategoria from './pages/DetalleCategoria';
 import DetalleProducto from './pages/DetalleProducto.jsx';
 import { ToastContainer } from 'react-toastify';
 import { useAuth } from './hooks/useAuth';
+import ChatBot from './components/chatbot/ChatBot.jsx';
 
 // Admin
 import AdminLogin from './admin/AdminLogin';
@@ -117,10 +118,13 @@ function App() {
         </Route>
       </Routes>
 
+      {!isAdminRoute && <ChatBot />}
+
       <ToastContainer
         position='bottom-left'
         autoClose={3000}
       />
+
       {!isAdminRoute && <Footer />}
     </>
   );

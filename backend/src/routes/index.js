@@ -12,6 +12,7 @@ import detalleCarritoRoutes from './detalleCarrito.routes.js';
 import detallePedidoRoutes from './detallePedido.routes.js';
 import cuponDescuentoRoutes from './cuponDescuento.routes.js';
 import dashboardRoutes from './dashboard.routes.js';
+import chatbotRoutes from './chatbot.routes.js';
 
 const router = express.Router();
 
@@ -28,5 +29,6 @@ router.use('/detallecarritos', detalleCarritoRoutes);
 router.use('/detallepedidos', detallePedidoRoutes);
 router.use('/cupones', cuponDescuentoRoutes);
 router.use('/dashboard', dashboardRoutes);
+router.use('./chat', chatbotRoutes);
 
 export default router;
