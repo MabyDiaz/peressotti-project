@@ -347,6 +347,12 @@ export const requestPasswordReset = async (req, res) => {
       });
     }
 
+    const generatePasswordResetToken = (email) => {
+      return jwt.sign({ email }, process.env.JWT_RESET_SECRET, {
+        expiresIn: '1h',
+      });
+    };
+
     const token = generatePasswordResetToken(cliente.email);
     await sendPasswordResetEmail(cliente.email, token);
 
