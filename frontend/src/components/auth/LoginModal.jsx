@@ -4,7 +4,12 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../../hooks/useAuth.js';
 import api from '../../api/axios.js';
 
-const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
+const LoginModal = ({
+  open,
+  onClose,
+  onSwitchToRegister,
+  onOpenForgotPassword,
+}) => {
   const [formData, setFormData] = useState({
     email: '',
     contrasena: '',
@@ -95,18 +100,29 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
             />
           </div>
 
-          {/* Contraseña */}
-          <div className='row flex items-center px-3 py-2 gap-2 rounded-md bg-gray-100 shadow-sm border border-gray-300 text-sm'>
-            <FaLock className='text-gray-600' />
-            <input
-              type='password'
-              name='contrasena'
-              placeholder='Contraseña'
-              value={formData.contrasena}
-              onChange={handleChange}
-              required
-              className='flex-1 text-gray-700 border-none focus:outline-none placeholder-gray-400'
-            />
+          {/* Contraseña + enlace "¿Olvidaste tu contraseña?" */}
+          <div className='flex flex-col gap-1'>
+            <div className='row flex items-center px-3 py-2 gap-2 rounded-md bg-gray-100 shadow-sm border border-gray-300 text-sm'>
+              <FaLock className='text-gray-600' />
+              <input
+                type='password'
+                name='contrasena'
+                placeholder='Contraseña'
+                value={formData.contrasena}
+                onChange={handleChange}
+                required
+                className='flex-1 text-gray-700 border-none focus:outline-none placeholder-gray-400'
+              />
+            </div>
+            <button
+              type='button'
+              onClick={() => {
+                onClose();
+                onOpenForgotPassword?.();
+              }}
+              className='self-end text-xs text-red-600 hover:underline mr-2'>
+              ¿Olvidaste tu contraseña?
+            </button>
           </div>
 
           <div className='flex justify-between mt-2'>
@@ -129,7 +145,7 @@ const LoginModal = ({ open, onClose, onSwitchToRegister }) => {
             className='mt-4'></div>
 
           {/* Link para registro */}
-          <div className='signup-link text-center text-gray-800 text-sm mt-2'>
+          <div className='signup-link text-center text-gray-800 text-xs mt-2'>
             ¿No tenés cuenta?{' '}
             <a
               href='#'

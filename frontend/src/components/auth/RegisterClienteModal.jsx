@@ -52,7 +52,6 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
         const res = await api.post('/auth/google', {
           token: response.credential,
         });
-      
 
         // actualizar el context
         saveUser(res.data.data); // data devuelta por backend: usuario creado/logueado
@@ -185,7 +184,7 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
             className='mt-4'></div>
 
           {/* Link para login */}
-          <div className='signup-link text-center text-gray-800 text-sm mt-2'>
+          <div className='signup-link text-center text-gray-800 text-xs mt-2'>
             ¿Ya tenés cuenta?{' '}
             <a
               href='#'

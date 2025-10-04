@@ -25,7 +25,7 @@ import logo from '../assets/img/imprentaPeressotti_Logo.png';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LoginModal from './auth/LoginModal.jsx';
 import LogoutIcon from '@mui/icons-material/Logout';
-
+import ForgotPasswordModal from './auth/ForgotPasswordModal.jsx';
 import RegisterClienteModal from './auth/RegisterClienteModal.jsx';
 import Carrito from './Carrito.jsx';
 
@@ -47,7 +47,7 @@ const Header = () => {
   const [categorias, setCategorias] = useState([]);
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
-
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const { cantidadTotal } = useCarrito();
   const navigate = useNavigate();
   const location = useLocation();
@@ -390,7 +390,6 @@ const Header = () => {
             </Menu>
           </Box>
         </Toolbar>
-
         {/* Menú móvil */}
         <Menu
           anchorEl={anchorElNav}
@@ -520,20 +519,27 @@ const Header = () => {
             </Box>
           ))}
         </Menu>
-
         {/* Modales de autenticación */}
         <LoginModal
           open={showLogin}
           onClose={() => setShowLogin(false)}
           onSwitchToRegister={() => setShowRegister(true)}
+          onOpenForgotPassword={() => {
+            setShowLogin(false);
+            setShowForgotPassword(true);
+          }}
         />
         <RegisterClienteModal
           open={showRegister}
           onClose={() => setShowRegister(false)}
           onSwitchToLogin={() => setShowLogin(true)}
         />
-
-        {/* Carrito Drawer */}
+        <ForgotPasswordModal
+          open={showForgotPassword}
+          onClose={() => setShowForgotPassword(false)}
+          onBackToLogin={() => setShowLogin(true)}
+        />
+        ;{/* Carrito Drawer */}
         {CarritoDrawer}
       </Container>
     </AppBar>

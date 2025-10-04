@@ -329,3 +329,32 @@ export const googleAuth = async (req, res, next) => {
       .json({ success: false, message: 'Error en login con Google' });
   }
 };
+
+// Generar token de restablecimiento (15 minutos de validez)
+const generatePasswordResetToken = (email) => {
+  return jwt.sign({ email }, process.env.JWT_RESET_SECRET, {
+    expiresIn: '15m',
+  });
+};
+
+// Enviar correo de recuperación
+export const requestPasswordReset = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Email requerido' });
+    }
+
+    const cliente = await Cliente.findOne({ where: { email } });
+    if (!cliente) {
+      // No revelamos si el email existe o no (por seguridad)
+      return res
+        .status(200)
+        .json({
+          success: true,
+          message: 'Si el email existe, recibirás un enlace.',
+        });
+    }
+
