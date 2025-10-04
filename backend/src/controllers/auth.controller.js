@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
+import { sendPasswordResetEmail } from '../utils/mailer.js';
 import { Cliente, Administrador, Rol } from '../models/index.js';
 
 const saltBcrypt = 10;
@@ -330,31 +331,64 @@ export const googleAuth = async (req, res, next) => {
   }
 };
 
-// Generar token de restablecimiento (15 minutos de validez)
-const generatePasswordResetToken = (email) => {
-  return jwt.sign({ email }, process.env.JWT_RESET_SECRET, {
-    expiresIn: '15m',
-  });
-};
-
-// Enviar correo de recuperación
 export const requestPasswordReset = async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) {
+    if (!email)
       return res
         .status(400)
         .json({ success: false, message: 'Email requerido' });
-    }
 
     const cliente = await Cliente.findOne({ where: { email } });
     if (!cliente) {
-      // No revelamos si el email existe o no (por seguridad)
-      return res
-        .status(200)
-        .json({
-          success: true,
-          message: 'Si el email existe, recibirás un enlace.',
-        });
+      return res.json({
+        success: true,
+        message: 'Si el email existe, recibirás un enlace.',
+      });
     }
 
+    const token = generatePasswordResetToken(cliente.email);
+    await sendPasswordResetEmail(cliente.email, token);
+
+    return res.json({
+      success: true,
+      message: 'Si el email existe, recibirás un enlace.',
+    });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Error al solicitar recuperación' });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, contrasena } = req.body;
+    if (!token || !contrasena) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Datos incompletos' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_RESET_SECRET);
+    const cliente = await Cliente.findOne({ where: { email: decoded.email } });
+    if (!cliente)
+      return res
+        .status(404)
+        .json({ success: false, message: 'Usuario no encontrado' });
+
+    const hashed = await bcrypt.hash(contrasena, 10);
+    await cliente.update({ contrasena: hashed });
+
+    return res.json({
+      success: true,
+      message: 'Contraseña restablecida con éxito',
+    });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(400)
+      .json({ success: false, message: 'Token inválido o expirado' });
+  }
+};

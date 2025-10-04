@@ -1,5 +1,4 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
-
 import CssBaseline from '@mui/material/CssBaseline';
 import ProtectedRoute from './admin/components/ProtectedRoute';
 import Header from './components/Header.jsx';
@@ -13,6 +12,7 @@ import DetalleProducto from './pages/DetalleProducto.jsx';
 import { ToastContainer } from 'react-toastify';
 import { useAuth } from './hooks/useAuth';
 import ChatBot from './components/chatbot/ChatBot.jsx';
+import ResetPasswordModal from './components/auth/ResetPasswordModal.jsx';
 
 // Admin
 import AdminLogin from './admin/AdminLogin';
@@ -63,9 +63,20 @@ function App() {
           path='/categoria/:id'
           element={<DetalleCategoria />}
         />
+
         <Route
           path='/producto/:id'
           element={<DetalleProducto />}
+        />
+
+        <Route
+          path='/reset-password'
+          element={
+            <ResetPasswordModal
+              open={true}
+              onClose={() => {}}
+            />
+          }
         />
 
         {/* Admin */}

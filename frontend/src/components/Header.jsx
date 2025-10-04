@@ -69,6 +69,12 @@ const Header = () => {
       .catch((err) => console.error('Error al obtener categorías', err));
   }, []);
 
+  useEffect(() => {
+    const handler = () => setShowLogin(true);
+    window.addEventListener('openLoginModal', handler);
+    return () => window.removeEventListener('openLoginModal', handler);
+  }, []);
+
   // Menú navegación
   const handleOpenNavMenu = (event) => setAnchorElNav(event.currentTarget);
   const handleCloseNavMenu = () => setAnchorElNav(null);

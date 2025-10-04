@@ -37,11 +37,16 @@ const ResetPasswordModal = ({ open, onClose }) => {
     try {
       const res = await api.post('/auth/reset-password', {
         token,
-        newPassword: password,
+        contrasena: password,
       });
       toast.success(res.data.message || 'Contraseña actualizada correctamente');
       onClose();
-      navigate('/'); // o a login
+      navigate('/'); //Primero va a Home y luego se abre el login
+      setTimeout(() => {
+        // disparás la apertura del login
+        const event = new CustomEvent('openLoginModal');
+        window.dispatchEvent(event);
+      }, 300);
     } catch (err) {
       console.error(err);
       toast.error(
