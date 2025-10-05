@@ -13,6 +13,7 @@ import detallePedidoRoutes from './detallePedido.routes.js';
 import cuponDescuentoRoutes from './cuponDescuento.routes.js';
 import dashboardRoutes from './dashboard.routes.js';
 import chatbotRoutes from './chatbot.routes.js';
+import pagoRoutes from './pago.routes.js';
 
 const router = express.Router();
 
@@ -30,5 +31,6 @@ router.use('/detallepedidos', detallePedidoRoutes);
 router.use('/cupones', cuponDescuentoRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/chat', chatbotRoutes);
+router.use('/pagos', pagoRoutes);
 
 export default router;
