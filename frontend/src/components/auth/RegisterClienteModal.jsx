@@ -66,18 +66,37 @@ const RegisterClienteModal = ({ open, onClose, onSwitchToLogin }) => {
     [saveUser, onClose]
   );
 
+  // useEffect(() => {
+  //   /* global google */
+  //   if (window.google && open) {
+  //     google.accounts.id.initialize({
+  //       client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+  //       callback: handleGoogleResponse,
+  //     });
+
+  //     google.accounts.id.renderButton(
+  //       document.getElementById('googleRegisterDiv'),
+  //       { theme: 'outline', size: 'large', width: '100%', text: 'signup_with' }
+  //     );
+  //   }
+  // }, [open, handleGoogleResponse]);
+
   useEffect(() => {
-    /* global google */
-    if (window.google && open) {
-      google.accounts.id.initialize({
+    if (open && window.google?.accounts?.id) {
+      const div = document.getElementById('googleRegisterDiv');
+      if (!div) return; // evita que se ejecute si el div no existe aún
+
+      window.google.accounts.id.initialize({
         client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
         callback: handleGoogleResponse,
       });
 
-      google.accounts.id.renderButton(
-        document.getElementById('googleRegisterDiv'),
-        { theme: 'outline', size: 'large', width: '100%', text: 'signup_with' }
-      );
+      window.google.accounts.id.renderButton(div, {
+        //theme: 'outline',
+        // size: 'large',
+        text: 'signup_with',
+        //width: 300,
+      });
     }
   }, [open, handleGoogleResponse]);
 
