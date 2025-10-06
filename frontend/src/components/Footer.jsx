@@ -447,7 +447,8 @@ function Footer() {
               variant='body2'
               color='text.secondary'
               sx={{ textAlign: { xs: 'center', md: 'left' } }}>
-              Calidad y compromiso en cada impresión.
+              {/* Calidad y compromiso en cada impresión. */}
+              Antes de imprimir, consultanos...
             </Typography>
           </Grid>
 

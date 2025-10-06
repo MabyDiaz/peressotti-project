@@ -154,7 +154,7 @@ function ListadoCategorias() {
                       padding: '2px',
                       borderRadius: '4px',
                       fontSize: {
-                        xs: '1rem', // text-base (16px)
+                        xs: '1.1rem', // text-base (16px)
                         sm: '1.1rem', // text-lg (18px)
                         md: '1.2rem', // text-xl (20px)
                       },

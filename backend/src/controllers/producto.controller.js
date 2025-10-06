@@ -11,7 +11,7 @@ export const getProductos = async (req, res) => {
   try {
     const {
       page = 1,
-      limit = 12,
+      limit = 8,
       activo,
       search,
       idCategoria,
@@ -51,19 +51,11 @@ export const getProductos = async (req, res) => {
       whereClause.destacado = true;
     }
 
-    // ⚙️ Orden dinámico corregido
-    let order = [];
-    if (sort === 'nombre' || sort === 'name-asc' || sort === 'name-desc') {
-      order = [['nombre', direction.toUpperCase()]];
-    } else if (
-      sort === 'precio' ||
-      sort === 'price-asc' ||
-      sort === 'price-desc'
-    ) {
-      order = [['precio', direction.toUpperCase()]];
-    } else {
-      order = [['createdAt', direction.toUpperCase()]];
-    }
+    const validSortFields = ['nombre', 'precio', 'createdAt'];
+    const sortField = validSortFields.includes(sort) ? sort : 'createdAt';
+    const sortDirection = direction?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+
+    const order = [[sortField, sortDirection]];
 
     const productos = await Producto.findAndCountAll({
       where: whereClause,

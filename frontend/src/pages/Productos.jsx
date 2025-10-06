@@ -1,100 +1,72 @@
-// // import ListaProductos from '../components/ListaProductos.jsx';
-// // import { Typography, Box } from '@mui/material';
-
-// // const Productos = () => {
-// //   return (
-// //     <Box>
-// //       <Typography
-// //         component='h1'
-// //         align='center'
-// //         sx={{
-// //           fontWeight: 'bold',
-// //           mt: 4,
-
-// //           textTransform: 'uppercase',
-// //           fontSize: {
-// //             xs: '1.3rem',
-// //             sm: '1.7rem',
-// //             md: '1.8rem',
-// //           },
-// //         }}>
-// //         Nuestros Productos
-// //       </Typography>
-// //       <ListaProductos />
-// //     </Box>
-// //   );
-// // };
-
-// // export default Productos;
-
-// import { useState, useEffect } from 'react';
-// import Filtros from '../components/Filtros';
-// import ListaProductos from '../components/ListaProductos';
-// import api from '../api/axios';
-
-// const Productos = () => {
-//   const [productos, setProductos] = useState([]);
-
-//   const obtenerProductos = async (filtros = {}) => {
-//     try {
-//       const params = new URLSearchParams(filtros).toString();
-//       console.log('🌐 Llamando al backend con:', `/api/productos?${params}`);
-//       const res = await api.get(`/productos?${params}`);
-//       console.log('✅ Respuesta del backend:', res.data);
-//       setProductos(res.data.data);
-//     } catch (error) {
-//       console.error('Error al obtener productos:', error);
-//     }
-//   };
-
-//   useEffect(() => {
-//     obtenerProductos(); // carga inicial sin filtros
-//   }, []);
-
-//   return (
-//     <div className='container mx-auto px-4 py-6'>
-//       <h1 className='text-2xl font-bold mb-6 text-center'>
-//         Nuestros Productos
-//       </h1>
-//       <Filtros onFiltrar={obtenerProductos} />
-//       <ListaProductos productos={productos} />
-//     </div>
-//   );
-// };
-
-// export default Productos;
-
 import { useState, useEffect } from 'react';
 import Filtros from '../components/Filtros';
 import ListaProductos from '../components/ListaProductos';
+import Pagination from '../admin/components/Pagination.jsx';
 import api from '../api/axios';
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [filtros, setFiltros] = useState({});
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+  });
 
-  const obtenerProductos = async (filtros = {}) => {
+  const obtenerProductos = async (nuevosFiltros = {}, page = 1) => {
     try {
-      const params = new URLSearchParams(filtros).toString();
-      console.log('🌐 Llamando al backend con:', `/api/productos?${params}`);
+      setLoading(true);
+      setError(null);
+
+      const params = new URLSearchParams({ ...nuevosFiltros, page }).toString();
       const res = await api.get(`/productos?${params}`);
-      console.log('✅ Respuesta del backend:', res.data);
-      setProductos(res.data.data);
-    } catch (error) {
-      console.error('❌ Error al obtener productos:', error);
+
+      if (res.data?.data) {
+        setProductos(res.data.data);
+        setPagination(res.data.pagination);
+        setFiltros(nuevosFiltros); // guardamos los filtros actuales
+      } else {
+        setProductos([]);
+        setPagination({ currentPage: 1, totalPages: 1 });
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Error al cargar productos');
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    obtenerProductos();
+    obtenerProductos(); // carga inicial
   }, []);
+
+  const handlePageChange = (page) => {
+    obtenerProductos(filtros, page);
+  };
 
   return (
     <div className='container mx-auto px-4 py-6'>
       <h1 className='text-2xl font-bold mb-6 text-center'>
         Nuestros Productos
       </h1>
-      <Filtros onFiltrar={obtenerProductos} />
-      <ListaProductos productos={productos} />
+
+      <Filtros
+        onFiltrar={(nuevosFiltros) => obtenerProductos(nuevosFiltros, 1)}
+      />
+
+      {loading ? (
+        <p className='text-center mt-6'>Cargando productos...</p>
+      ) : error ? (
+        <p className='text-center text-red-600 mt-6'>{error}</p>
+      ) : (
+        <ListaProductos productos={productos} />
+      )}
+      <Pagination
+        pagination={pagination}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };
