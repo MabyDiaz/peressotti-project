@@ -11,30 +11,58 @@ export const getProductos = async (req, res) => {
   try {
     const {
       page = 1,
-      limit = 10,
+      limit = 12,
       activo,
       search,
       idCategoria,
-      sort = 'createdAt',
+      tipo,
+      sort,
       direction = 'DESC',
     } = req.query;
 
-    const offset = (page - 1) * limit;
+    console.log('📩 Filtros recibidos en backend:', req.query);
 
+    const offset = (page - 1) * limit;
     const whereClause = {};
+
+    // Filtrar por activo
     if (activo !== undefined && activo !== 'all') {
       whereClause.activo = activo === 'true';
     }
 
-    if (search) {
-      whereClause[Op.or] = [
-        { nombre: { [Op.like]: `%${search}%` } },
-        { descripcion: { [Op.like]: `%${search}%` } },
-      ];
+    // 🔍 Búsqueda flexible por nombre o descripción
+    if (search && search.trim() !== '') {
+      const palabras = search.trim().split(/\s+/); // divide por espacios
+      whereClause[Op.and] = palabras.map((palabra) => ({
+        [Op.or]: [
+          { nombre: { [Op.like]: `%${palabra}%` } },
+          { descripcion: { [Op.like]: `%${palabra}%` } },
+        ],
+      }));
     }
 
-    if (idCategoria) {
-      whereClause.idCategoria = idCategoria;
+    // 📂 Filtro por categoría
+    if (idCategoria) whereClause.idCategoria = Number(idCategoria);
+
+    // 🏷️ Filtro por chip
+    if (tipo === 'promociones') {
+      whereClause.oferta = true;
+    } else if (tipo === 'mas-vendidos') {
+      whereClause.destacado = true;
+    }
+
+    // ⚙️ Orden dinámico corregido
+    let order = [];
+    if (sort === 'nombre' || sort === 'name-asc' || sort === 'name-desc') {
+      order = [['nombre', direction.toUpperCase()]];
+    } else if (
+      sort === 'precio' ||
+      sort === 'price-asc' ||
+      sort === 'price-desc'
+    ) {
+      order = [['precio', direction.toUpperCase()]];
+    } else {
+      order = [['createdAt', direction.toUpperCase()]];
     }
 
     const productos = await Producto.findAndCountAll({
@@ -42,8 +70,10 @@ export const getProductos = async (req, res) => {
       include: [{ model: Categoria, attributes: ['id', 'nombre'] }],
       limit: parseInt(limit),
       offset: parseInt(offset),
-      order: [[sort, direction.toUpperCase()]],
+      order,
     });
+
+    console.log(`📦 ${productos.rows.length} productos encontrados`);
 
     res.json({
       success: true,
@@ -55,12 +85,11 @@ export const getProductos = async (req, res) => {
         itemsPerPage: parseInt(limit),
       },
     });
-    console.log(productos.rows);
   } catch (err) {
-    console.error('Error en getProductos:', err);
+    console.error('❌ Error en getProductos:', err);
     res.status(500).json({
       success: false,
-      error: 'Error interno del servidor',
+      error: err.message,
       message: 'No se pudieron obtener los productos',
     });
   }
