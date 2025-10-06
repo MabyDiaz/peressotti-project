@@ -70,7 +70,7 @@ const ProcesoCompra = () => {
               <div
                 className={`w-20 h-20 mx-auto flex items-center justify-center rounded-full shadow-md transition-transform duration-300 ${
                   index <= currentStep
-                    ? 'bg-gradient-to-br from-cyan-400 to-red-500 text-white scale-110'
+                    ? 'bg-[#e7000b] text-white scale-110'
                     : 'bg-white text-gray-400'
                 }`}
                 style={{ fontSize: '1.8rem' }}>
@@ -95,14 +95,14 @@ const ProcesoCompra = () => {
                 key={index}
                 onClick={() => setCurrentStep(index)}
                 className={`w-3 h-3 rounded-full mx-1 ${
-                  index === currentStep ? 'bg-cyan-500' : 'bg-gray-300'
+                  index === currentStep ? 'bg-[#e7000b]' : 'bg-gray-300'
                 }`}
               />
             ))}
           </div>
 
           <div>
-            <div className='w-20 h-20 mx-auto mb-4 flex items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-red-500 text-white text-2xl animate-pulse'>
+            <div className='w-20 h-20 mx-auto mb-4 flex items-center justify-center rounded-full bg-[#e7000b] text-white text-2xl animate-pulse'>
               {steps[currentStep].icon}
             </div>
             <h3 className='text-lg font-semibold'>

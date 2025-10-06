@@ -71,7 +71,7 @@ const ProductosDestacados = () => {
 
   return (
     <Box className='px-20 py-10 pb-6'>
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1 justify-center'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-1 lg:px-12 justify-center'>
         {productos.map((producto) => (
           <div
             key={producto.id}

@@ -101,8 +101,8 @@ function ListadoCategorias() {
             md={3}>
             <Card
               sx={{
-                width: 260,
-                height: 280,
+                width: 250,
+                height: 247,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
@@ -145,18 +145,18 @@ function ListadoCategorias() {
                     width: '100%',
                     position: 'absolute',
                     bottom: 0,
-                    py: 2,
                   }}>
                   <Typography
                     variant='h6'
                     sx={{
-                      backgroundColor: '#DC2626',
+                      backgroundColor: '#e7000b',
                       color: '#fff',
                       padding: '2px',
+                      borderRadius: '4px',
                       fontSize: {
                         xs: '1rem', // text-base (16px)
-                        sm: '1.125rem', // text-lg (18px)
-                        md: '1.25rem', // text-xl (20px)
+                        sm: '1.1rem', // text-lg (18px)
+                        md: '1.2rem', // text-xl (20px)
                       },
                     }}
                     align='center'>

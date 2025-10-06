@@ -395,7 +395,7 @@ const BloqueHero = () => {
                 {/* Botón ver detalle con Link */}
                 <Link
                   to={`/producto/${productoHero.id}`}
-                  className='mt-3 bg-red-700 border-2 border-transparent hover:bg-transparent hover:border-2 hover:border-white text-white text-xs font-bold py-2 px-3 rounded flex items-center justify-center transition-colors duration-200'>
+                  className='mt-3 bg-[#e7000b] border-2 border-transparent hover:bg-transparent hover:border-2 hover:border-white text-white text-xs font-bold py-2 px-3 rounded flex items-center justify-center transition-colors duration-200'>
                   <FaEye
                     size={14}
                     className='mr-1'
@@ -406,7 +406,7 @@ const BloqueHero = () => {
                 {/* Botón agregar al carrito */}
                 <button
                   onClick={() => agregarProducto(productoHero, 1)}
-                  className='mt-3 transparent border-2 border-white hover:bg-red-700 hover:border-transparent text-white text-xs font-bold py-2 px-3 rounded flex items-center justify-center transition-colors duration-200'>
+                  className='mt-3 transparent border-2 border-white hover:bg-[#e7000b] hover:border-transparent text-white text-xs font-bold py-2 px-3 rounded flex items-center justify-center transition-colors duration-200'>
                   <FaShoppingCart
                     size={14}
                     className='mr-1'

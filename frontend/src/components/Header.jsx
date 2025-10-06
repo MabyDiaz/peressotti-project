@@ -131,7 +131,7 @@ const Header = () => {
                 sx={{
                   color: '#fff',
                   backgroundColor: 'transparent',
-                  '&:hover': { backgroundColor: '#dc2626', color: '#fff' },
+                  '&:hover': { backgroundColor: '#e7000b', color: '#fff' },
                   borderRadius: '6px',
                   padding: '8px',
                 }}>
@@ -165,10 +165,10 @@ const Header = () => {
                       sx={{
                         color: 'white',
                         backgroundColor: isCategoriaPage
-                          ? '#dc2626'
+                          ? '#e7000b'
                           : 'transparent',
                         '&:hover': {
-                          backgroundColor: '#dc2626',
+                          backgroundColor: '#e7000b',
                           color: 'white',
                         },
                         py: 1,
@@ -216,7 +216,7 @@ const Header = () => {
                             pr: 2,
                             mx: 0.5,
                             '&:hover': {
-                              backgroundColor: '#dc2626',
+                              backgroundColor: '#e7000b',
                               color: '#fff',
                             },
                           }}>
@@ -235,10 +235,10 @@ const Header = () => {
                       color: 'white',
                       backgroundColor: 'transparent',
                       '&.active': {
-                        backgroundColor: '#dc2626',
+                        backgroundColor: '#e7000b',
                         color: 'white',
                       },
-                      '&:hover': { backgroundColor: '#dc2626', color: 'white' },
+                      '&:hover': { backgroundColor: '#e7000b', color: 'white' },
                       py: 1,
                       px: 2,
                       borderRadius: 1,
@@ -257,7 +257,7 @@ const Header = () => {
               sx={{
                 color: 'white',
                 backgroundColor: 'transparent',
-                '&:hover': { backgroundColor: '#dc2626', color: 'white' },
+                '&:hover': { backgroundColor: '#e7000b', color: 'white' },
                 borderRadius: '6px',
                 padding: '8px',
               }}>
@@ -273,7 +273,7 @@ const Header = () => {
                 <Typography
                   variant='body2'
                   sx={{
-                    backgroundColor: '#dc2626',
+                    backgroundColor: '#e7000b',
                     color: 'white',
                     py: 1.1,
                     px: 2,
@@ -287,7 +287,7 @@ const Header = () => {
                   sx={{
                     color: 'white',
                     backgroundColor: 'transparent',
-                    '&:hover': { backgroundColor: '#dc2626', color: 'white' },
+                    '&:hover': { backgroundColor: '#e7000b', color: 'white' },
                     borderRadius: '6px',
                     padding: '8px',
                   }}>
@@ -305,7 +305,7 @@ const Header = () => {
                         fontSize: 44,
                         bgcolor: '#1F2937',
                         color: '#fff',
-                        '&:hover': { color: '#dc2626', bgcolor: '#fff' },
+                        '&:hover': { color: '#e7000b', bgcolor: '#fff' },
                       }}
                     />
                   </Avatar>
@@ -347,7 +347,7 @@ const Header = () => {
                     color: '#fff',
                     borderRadius: '6px',
                     py: 0.7,
-                    '&:hover': { backgroundColor: '#dc2626', color: '#fff' },
+                    '&:hover': { backgroundColor: '#e7000b', color: '#fff' },
                     '& .MuiTypography-root': {
                       fontSize: '0.9rem',
                       fontWeight: 500,
@@ -366,7 +366,7 @@ const Header = () => {
                       color: '#fff',
                       borderRadius: '6px',
                       py: 0.7,
-                      '&:hover': { backgroundColor: '#dc2626', color: '#fff' },
+                      '&:hover': { backgroundColor: '#e7000b', color: '#fff' },
                       '& .MuiTypography-root': {
                         fontSize: '0.9rem',
                         fontWeight: 500,
@@ -383,7 +383,7 @@ const Header = () => {
                       color: '#fff',
                       borderRadius: '6px',
                       py: 0.7,
-                      '&:hover': { backgroundColor: '#dc2626', color: '#fff' },
+                      '&:hover': { backgroundColor: '#e7000b', color: '#fff' },
                       '& .MuiTypography-root': {
                         fontSize: '0.9rem',
                         fontWeight: 500,
@@ -430,11 +430,11 @@ const Header = () => {
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       backgroundColor: isCategoriaPage
-                        ? '#dc2626'
+                        ? '#e7000b'
                         : 'transparent',
                       color: isCategoriaPage ? 'white' : '#fff',
                       '&:hover': {
-                        backgroundColor: '#dc2626',
+                        backgroundColor: '#e7000b',
                         color: 'white',
                         borderRadius: '8px',
                       },
@@ -485,7 +485,7 @@ const Header = () => {
                           pr: 2,
                           mx: 0.5,
                           '&:hover': {
-                            backgroundColor: '#dc2626',
+                            backgroundColor: '#e7000b',
                             color: '#fff',
                           },
                         }}>
@@ -504,12 +504,12 @@ const Header = () => {
                     my: 1,
                     color: '#fff',
                     '&.active': {
-                      backgroundColor: '#dc2626',
+                      backgroundColor: '#e7000b',
                       color: 'white',
                       borderRadius: '8px',
                     },
                     '&:hover': {
-                      backgroundColor: '#dc2626',
+                      backgroundColor: '#e7000b',
                       color: 'white',
                       borderRadius: '8px',
                     },

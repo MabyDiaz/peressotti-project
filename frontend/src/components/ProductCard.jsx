@@ -128,7 +128,7 @@ const ProductCard = ({ producto, rating, onRatingChange }) => {
 
         <Link
           to={`/producto/${producto.id}`}
-          className='mt-3 w-full bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2 px-3 rounded flex items-center justify-center transition-colors duration-200'>
+          className='mt-3 w-full bg-[#e7000b] hover:bg-red-700 text-white text-xs font-bold py-2 px-3 rounded flex items-center justify-center transition-colors duration-200'>
           <FaEye
             size={14}
             className='mr-1'
