@@ -47,8 +47,8 @@ const Productos = () => {
   };
 
   return (
-    <div className='container mx-auto px-4 py-6'>
-      <h1 className='text-2xl font-bold mb-6 text-center'>
+    <div className='bg-[#1F2937] container mx-auto px-2 py-6'>
+      <h1 className='text-2xl text-white font-bold mb-6 text-center'>
         Nuestros Productos
       </h1>
 

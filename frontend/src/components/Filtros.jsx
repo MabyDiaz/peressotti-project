@@ -55,7 +55,9 @@ const Filtros = ({ onFiltrar }) => {
       elevation={1}
       className='p-6'
       sx={{ bgcolor: 'grey.50' }}>
-      <Box className='flex flex-wrap items-center gap-4 justify-center'>
+      <Box
+        className='flex items-center gap-4 justify-center overflow-x-auto'
+        sx={{ flexWrap: 'nowrap' }}>
         {/* Chips (filtros rápidos) */}
         <Box className='hidden md:flex'>
           {[
@@ -92,14 +94,31 @@ const Filtros = ({ onFiltrar }) => {
           sx={{
             width: 200,
             mr: 2,
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: '#e7000b',
+                borderWidth: 2,
+              },
+              '&:hover fieldset': {
+                borderColor: '#e7000b',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#e7000b',
+              },
+            },
+            '& .MuiSelect-icon': {
+              color: '#e7000b',
+            },
             '& .MuiInputLabel-root': {
               fontFamily: 'inherit',
-              fontWeight: 'bold',
-            }, // etiqueta
+              // fontWeight: 'bold',
+              color: '#E7000B',
+            },
             '& .MuiSelect-select': {
               fontFamily: 'inherit',
-              fontWeight: 'bold',
-            }, // texto seleccionado
+              // fontWeight: 'bold',
+              color: '#E7000B',
+            },
           }}>
           <InputLabel>Categoría</InputLabel>
           <Select
@@ -123,14 +142,31 @@ const Filtros = ({ onFiltrar }) => {
           sx={{
             width: 200,
             mr: 2,
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: '#e7000b',
+                borderWidth: 2,
+              },
+              '&:hover fieldset': {
+                borderColor: '#e7000b',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#e7000b',
+              },
+            },
+            '& .MuiSelect-icon': {
+              color: '#e7000b',
+            },
             '& .MuiInputLabel-root': {
               fontFamily: 'inherit',
-              fontWeight: 'bold',
-            }, // etiqueta
+              // fontWeight: 'bold',
+              color: '#E7000B',
+            },
             '& .MuiSelect-select': {
               fontFamily: 'inherit',
-              fontWeight: 'bold',
-            }, // texto seleccionado
+              // fontWeight: 'bold',
+              color: '#E7000B',
+            },
           }}>
           <InputLabel>Ordenar por</InputLabel>
           <Select
@@ -162,12 +198,31 @@ const Filtros = ({ onFiltrar }) => {
               <InputAdornment position='end'>
                 <IconButton
                   size='small'
-                  onClick={() => aplicarFiltros()}>
+                  onClick={() => aplicarFiltros()}
+                  sx={{ color: '#e7000b' }}>
                   <SearchIcon />
                 </IconButton>
               </InputAdornment>
             ),
-            sx: { fontFamily: 'inherit', fontWeight: 'bold' }, // letra igual a los chips
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: '#e7000b',
+                borderWidth: 2,
+              },
+              '&:hover fieldset': {
+                borderColor: '#e7000b',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#e7000b',
+              },
+            },
+            '& .MuiInputBase-input': {
+              fontFamily: 'inherit',
+              // fontWeight: 'bold',
+              color: '#E7000B',
+            },
           }}
         />
       </Box>

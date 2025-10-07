@@ -29,6 +29,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-toastify';
 import ModalDetallePersonalizacion from './ModalDetallePersonalizacion';
+import ModalLoginCliente from '../components/auth/LoginModal.jsx';
 import { getImageUrl } from '../utils/getImageUrl.js';
 
 const Carrito = () => {
@@ -77,6 +78,7 @@ const CarritoDrawer = ({ open, onClose }) => {
   const [modalData, setModalData] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [compraExitosa, setCompraExitosa] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -87,7 +89,7 @@ const CarritoDrawer = ({ open, onClose }) => {
   const handleAplicarCupon = () => {
     if (!user) {
       toast.error('Debes iniciar sesión para aplicar un cupón');
-      navigate('/loginCliente');
+      setLoginModalOpen(true);
       return;
     }
 
@@ -132,7 +134,7 @@ const CarritoDrawer = ({ open, onClose }) => {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              backgroundColor: '#DC2626',
+              backgroundColor: '#e7000b',
               borderRadius: '8px',
             }}>
             <Typography
@@ -304,7 +306,7 @@ const CarritoDrawer = ({ open, onClose }) => {
                         <Typography
                           variant='subtitle2'
                           fontWeight='bold'
-                          color='#dc2626'
+                          color='#e7000b'
                           sx={{ mt: 0.5 }}>
                           Total: ${item.precio * item.cantidad}
                         </Typography>
@@ -437,7 +439,7 @@ const CarritoDrawer = ({ open, onClose }) => {
                   <Typography
                     sx={{
                       fontSize: '0.95rem',
-                      color: '#DC2626',
+                      color: '#e7000b',
                       fontWeight: 'bold',
                     }}>
                     Subtotal:
@@ -445,7 +447,7 @@ const CarritoDrawer = ({ open, onClose }) => {
                   <Typography
                     sx={{
                       fontSize: '0.95rem',
-                      color: '#DC2626',
+                      color: '#e7000b',
                       fontWeight: 'bold',
                     }}>
                     ${subtotal.toFixed(2)}
@@ -454,66 +456,88 @@ const CarritoDrawer = ({ open, onClose }) => {
               </Box>
 
               {/* Cupón */}
-              {cupon && cupon.porcentajeDescuento > 0 ? (
-                <Box
+              <Box
+                sx={{
+                  mb: 2,
+                  display: 'flex',
+                  flexDirection: { xs: 'column', md: 'row' },
+                  alignItems: { xs: 'stretch', md: 'center' },
+                  gap: { xs: 1, md: 1.5 },
+                }}>
+                <TextField
+                  size='small'
+                  placeholder='Código de cupón'
+                  value={codigo}
+                  onChange={(e) => setCodigo(e.target.value)}
                   sx={{
-                    mb: 2,
-                    display: 'flex',
-                    gap: 1,
-                    flexDirection: { xs: 'row', sm: 'row' },
-                    alignItems: 'center',
-                  }}>
-                  <Typography color='success.main'>
-                    Descuento ({cupon.codigo}):
-                  </Typography>
-                  <Typography color='success.main'>
-                    -${descuentoPorCupon().toFixed(2)}
-                  </Typography>
-                </Box>
-              ) : (
-                <Box sx={{ mb: 2 }}>
-                  <TextField
-                    size='small'
-                    placeholder='Código de cupón'
-                    value={codigo}
-                    onChange={(e) => setCodigo(e.target.value)}
-                    sx={{
-                      flex: 1,
-                      '& .MuiInputBase-root': {
-                        height: { xs: 36, sm: 40 },
-                      },
-                      '& input::placeholder': {
-                        fontSize: { xs: '0.75rem', sm: '0.85rem' },
-                      },
-                    }}
-                  />
-                  <Button
-                    onClick={handleAplicarCupon}
-                    variant='contained'
-                    size='small'
-                    sx={{
-                      whiteSpace: 'nowrap',
-                      height: { xs: 36, sm: 40 },
-                      flexGrow: 0,
-                      minWidth: { xs: 80, sm: 100 },
-                      px: { xs: 1, sm: 2 },
+                    flex: 1,
+                    '& .MuiInputBase-root': {
+                      height: { xs: 36, sm: 40, md: 42 },
+                    },
+                    '& input::placeholder': {
                       fontSize: { xs: '0.75rem', sm: '0.85rem' },
-                      backgroundColor: '#DC2626',
-                      '&:hover': { backgroundColor: '#B91C1C' },
+                    },
+                  }}
+                />
+                <Button
+                  onClick={handleAplicarCupon}
+                  variant='contained'
+                  size='small'
+                  sx={{
+                    textTransform: 'capitalize',
+                    height: { xs: 36, sm: 40, md: 42 },
+                    flexGrow: 0,
+                    minWidth: { xs: 80, sm: 100, md: 110 },
+                    px: { xs: 1, sm: 2 },
+                    fontSize: { xs: '0.75rem', sm: '0.85rem' },
+                    backgroundColor: '#e7000b',
+                    alignSelf: { xs: 'stretch', md: 'flex-end' },
+                    '&:hover': { backgroundColor: '#B91C1C' },
+                  }}>
+                  Aplicar
+                </Button>
+                {mensaje && (
+                  <Alert
+                    severity={mensaje.includes('éxito') ? 'success' : 'error'}
+                    sx={{
+                      mt: { xs: 1, md: 0 },
+                      fontSize: '0.8rem',
+                      flexBasis: '100%',
                     }}>
-                    Aplicar
-                  </Button>
-                  {mensaje && (
-                    <Alert
-                      severity={mensaje.includes('éxito') ? 'success' : 'error'}
-                      sx={{ mt: 1, fontSize: '0.8rem' }}>
-                      {mensaje}
-                    </Alert>
-                  )}
-                </Box>
-              )}
+                    {mensaje}
+                  </Alert>
+                )}
+              </Box>
 
               <Divider sx={{ my: 1 }} />
+
+              {cupon && descuentoPorCupon > 0 && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    px: 1,
+                    mb: 1,
+                  }}>
+                  <Typography
+                    sx={{
+                      fontSize: '0.9rem',
+                      color: '#16a34a',
+                      fontWeight: 'bold',
+                    }}>
+                    Descuento ({cupon.nombreCupon} - {cupon.porcentajeDescuento}
+                    %)
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: '0.9rem',
+                      color: '#16a34a',
+                      fontWeight: 'bold',
+                    }}>
+                    -${descuentoPorCupon.toFixed(2)}
+                  </Typography>
+                </Box>
+              )}
 
               {/* Total */}
               <Box
@@ -530,7 +554,7 @@ const CarritoDrawer = ({ open, onClose }) => {
                 <Typography
                   variant='h6'
                   fontWeight='bold'
-                  color='#DC2626'>
+                  color='#e7000b'>
                   ${totalCarrito.toFixed(2)}
                 </Typography>
               </Box>
@@ -546,8 +570,8 @@ const CarritoDrawer = ({ open, onClose }) => {
                     fontSize: { xs: '0.75rem', sm: '0.9rem' },
                     px: { xs: 1, sm: 2 },
                     py: { xs: 0.5, sm: 1 },
-                    borderColor: '#DC2626',
-                    color: '#DC2626',
+                    borderColor: '#e7000b',
+                    color: '#e7000b',
                     fontWeight: 'bold',
                     textTransform: 'none',
                     '&:hover': {
@@ -566,7 +590,7 @@ const CarritoDrawer = ({ open, onClose }) => {
                     fontSize: { xs: '0.75rem', sm: '0.9rem' },
                     px: { xs: 1, sm: 2 },
                     py: { xs: 0.5, sm: 1 },
-                    backgroundColor: '#DC2626',
+                    backgroundColor: '#e7000b',
                     '&:hover': { backgroundColor: '#B91C1C' },
                     fontWeight: 'bold',
                     textTransform: 'none',
@@ -596,7 +620,7 @@ const CarritoDrawer = ({ open, onClose }) => {
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 mb: 3,
-                backgroundColor: '#DC2626',
+                backgroundColor: '#e7000b',
                 borderRadius: '8px',
               }}>
               <Typography
@@ -634,7 +658,7 @@ const CarritoDrawer = ({ open, onClose }) => {
                 variant='contained'
                 sx={{
                   mt: 3,
-                  backgroundColor: '#DC2626',
+                  backgroundColor: '#e7000b',
                   '&:hover': { backgroundColor: '#4B5563' },
                 }}
                 onClick={onClose}>
@@ -662,7 +686,7 @@ const CarritoDrawer = ({ open, onClose }) => {
           sx={{
             textAlign: 'center',
             fontWeight: 'bold',
-            bgcolor: '#DC2626',
+            bgcolor: '#e7000b',
             color: '#fff',
             fontSize: '1.1rem',
             pb: 1,
@@ -674,7 +698,7 @@ const CarritoDrawer = ({ open, onClose }) => {
           <Typography
             variant='h6'
             sx={{
-              color: '#DC2626',
+              color: '#e7000b',
               fontWeight: 'bold',
               fontSize: '1rem',
             }}>
@@ -686,7 +710,7 @@ const CarritoDrawer = ({ open, onClose }) => {
             variant='contained'
             size='small'
             sx={{
-              backgroundColor: '#DC2626',
+              backgroundColor: '#e7000b',
               '&:hover': { backgroundColor: '#B91C1C' },
               fontSize: '0.8rem',
               py: 0.5,
@@ -708,6 +732,12 @@ const CarritoDrawer = ({ open, onClose }) => {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         customData={modalData}
+      />
+
+      <ModalLoginCliente
+        open={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        sx={{ zIndex: 3000 }}
       />
     </>
   );
